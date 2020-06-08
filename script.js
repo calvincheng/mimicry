@@ -112,6 +112,17 @@ class View {
     const cardTitle = document.createElement('h2');
     cardTitle.innerText = 'Sign up to Mimicry';
 
+    // Add error message
+    const errorMessageWrapper = document.createElement('div');
+    errorMessageWrapper.className = 'error-wrapper';
+    errorMessageWrapper.style.visibility = 'hidden';
+
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'error';
+    errorMessage.innerText = 'Error';
+
+    errorMessageWrapper.append(errorMessage);
+
     const emailField = this._makeField('text', 'Email', 'emailField');
     const passwordField = this._makeField('password', 'Password', 'passwordField');
     const passwordConfirmField = this._makeField('password', 'Retype password', 'passwordConfirmField');
@@ -132,6 +143,7 @@ class View {
 
     signupCard.append(
       cardTitle, 
+      errorMessageWrapper,
       emailField, 
       passwordField, 
       passwordConfirmField, 
@@ -152,7 +164,9 @@ class View {
     cardTitle.innerText = 'Log out';
 
     const userInfo = document.createElement('p');
-    userInfo.innerHTML = user.email;
+    userInfo.style.wordBreak = 'break-all';
+    //user.getIdToken().then((token) => userInfo.innerText = token);
+    userInfo.innerText = user.email;
 
     const logoutButton = document.createElement('button');
     logoutButton.id = 'logoutButton';
@@ -214,7 +228,8 @@ class View {
 
       // Stop sign-up process if passwords don't match
       if (password !== passwordConfirm) {
-        this.raiseSignupError('differentPasswords');
+        let errorMessage = 'The passwords do not match.'
+        this.raiseSignupError(errorMessage, false, true);
         return;
       }
 
@@ -255,15 +270,27 @@ class View {
     }
   }
 
-  raiseSignupError(type) {
-    switch (type) {
-      case 'differentPasswords':
-        let pwdField = document.getElementById('passwordField');
-        document.getElementById('passwordField')
-          .parentElement.classList.add('field-failure');
-        document.getElementById('passwordConfirmField')
-          .parentElement.classList.add('field-failure');
-        break;
+  raiseSignupError(message, highlightEmailField, highlightPasswordField) {
+    const emailField = document.getElementById('emailField');
+    const passwordField = document.getElementById('passwordField');
+    const passwordConfirmField = document.getElementById('passwordConfirmField');
+
+    // Reset form styles
+    emailField.parentElement.classList.remove('field-failure');
+    passwordField.parentElement.classList.remove('field-failure');
+    passwordConfirmField.parentElement.classList.remove('field-failure');
+
+    // Display error message
+    document.querySelector('.error-wrapper').style.visibility = 'visible';
+    document.querySelector('.error').innerText = message;
+
+    // Change specified input fields to error state if specified
+    if (highlightEmailField) {
+      emailField.parentElement.classList.add('field-failure');
+    }
+    if (highlightPasswordField) {
+      passwordField.parentElement.classList.add('field-failure');
+      passwordConfirmField.parentElement.classList.add('field-failure');
     }
   }
 
@@ -355,6 +382,23 @@ class Controller {
   createAccount = (email, password) => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .catch((error) => {
+        let message;
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            message = 'The email address is already registered.'
+            this.view.raiseSignupError(message, true, false);
+            break;
+          case 'auth/invalid-email':
+            message = 'Please enter a valid email address.';
+            this.view.raiseSignupError(message, true, false);
+            break;
+          case 'auth/wrong-password':
+            message = 'Invalid password. Please try again.';
+            this.view.raiseSignupError(message, false, true);
+            break;
+          default:
+            this.view.raiseSignupError(error.message, true, true);
+        }
         console.log(error.code);
         console.log(error.message);
       });
