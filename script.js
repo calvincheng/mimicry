@@ -201,15 +201,8 @@ class View {
         return;
       }
 
-      // Create user on Firebase Auth with submitted email/password
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-        .then(handler())
-        .catch( (error) => {
-          let errorCode = error.code;
-          let errorMessage = error.message;
-          console.log(errorCode);
-          console.log(errorMessage);
-        });
+      handler(email, password);
+
     });
   }
 
@@ -244,6 +237,7 @@ class View {
     input.type = type;
     input.id = id;
     input.placeholder = ' ';
+    input.autocomplete = 'off'; // chrome autocomplete styling is grotesque, temp fix
 
     const label = document.createElement('label');
     label.innerText = labelText;
@@ -260,47 +254,38 @@ class View {
   }
 }
 
-let timeout;
-
 class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
 
     firebase.auth().onAuthStateChanged((user) => {
-      // TODO: Add debouncing
-      clearTimeout(timeout);
+      if (user) {
+        // User is signed in.
+        let displayName = user.displayName;
+        let email = user.email;
+        let emailVerified = user.emailVerified;
+        let photoURL = user.photoURL;
+        let uid = user.uid;
+        console.log('Signed in');
 
-      timeout = setTimeout(() => {
-        if (user) {
-          // User is signed in.
-          let displayName = user.displayName;
-          let email = user.email;
-          let emailVerified = user.emailVerified;
-          let photoURL = user.photoURL;
-          let uid = user.uid;
-          console.log('Signed in');
+        this.showLogoutCard(user);
+        
+      } else {
+        // User is signed out.
+        console.log('Signed out');
 
-          this.showLogoutCard(user);
-          
-        } else {
-          // User is signed out.
-          console.log('Signed out');
+        this.showLoginCard();
 
-          this.showLoginCard();
-
-        }
-      }, 200);
+      }
     });
   }
 
   loginUser = (email, password) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
-      .catch( (error) => {
-        let errorCode = error.code;
-        let errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
+      .catch((error) => {
+        console.log(error.code);
+        console.log(error.message);
       });
   }
 
@@ -312,7 +297,12 @@ class Controller {
       });
   }
 
-  createAccount = () => {
+  createAccount = (email, password) => {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .catch((error) => {
+        console.log(error.code);
+        console.log(error.message);
+      });
   }
 
   showLoginCard = () => {
