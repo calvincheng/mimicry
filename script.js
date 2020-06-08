@@ -37,7 +37,19 @@ class Model {
 
 class View {
   constructor() {
+    this.showNavbar();
     this.showLoginCard();
+  }
+
+  showNavbar() {
+    const nav = document.createElement('nav');
+    const logo = document.createElement('img');
+    logo.className = 'nav-logo';
+    logo.src = './assets/svg/logo_dark.svg';
+    logo.ondragstart = () => {return false};
+
+    nav.append(logo);
+    document.body.prepend(nav);
   }
 
   showLoginCard() {
@@ -315,7 +327,11 @@ class View {
   }
 
   _clearWindow() {
-    document.body.innerHTML = '';
+    // Clear everything but the nav
+    let nav  = document.querySelector('nav');
+    while (nav.nextSibling) {
+      nav.nextSibling.remove();
+    }
   }
 }
 
@@ -427,8 +443,7 @@ class Controller {
 }
 
 const app = new Controller(new Model, new View);
-
-
+app.view._clearWindow();
 
 
 

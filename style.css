@@ -19,6 +19,23 @@ a {
   color: inherit;
 }
 
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 15vh;
+  min-height: 160px;
+  width: 100%;
+
+  display: flex;
+
+  padding: 36px;
+}
+
+.nav-logo {
+  width: 124px;
+}
+
 .centered {
   position: absolute;
   top: 50%;
