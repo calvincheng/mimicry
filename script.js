@@ -42,7 +42,7 @@ class View {
 
   showLoginCard() {
     const loginCard = document.createElement('div');
-    loginCard.className = 'card';
+    loginCard.className = 'card centered';
     
     // Add title
     const cardTitle = document.createElement('h2');
@@ -107,7 +107,7 @@ class View {
 
   showSignupCard() {
     const signupCard = document.createElement('div');
-    signupCard.className = 'card';
+    signupCard.className = 'card centered';
     
     const cardTitle = document.createElement('h2');
     cardTitle.innerText = 'Sign up to Mimicry';
@@ -158,7 +158,7 @@ class View {
 
   showLogoutCard(user) {
     const logoutCard = document.createElement('div');
-    logoutCard.className = 'card';
+    logoutCard.className = 'card centered';
     
     const cardTitle = document.createElement('h2');
     cardTitle.innerText = 'Log out';
