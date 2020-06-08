@@ -34,7 +34,7 @@ a {
 }
 
 .card h2 {
-  margin-bottom: 5rem;
+  margin-bottom: 3rem;
 }
 
 .card a {
@@ -48,7 +48,21 @@ a {
   color: #ddd;
 }
 
+.card .error-wrapper {
+  color: red;
+  font-size: 0.8rem;
+  margin-bottom: 1.5rem;
+
+}
+
 /* INPUT STUFF */
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active  {
+  -webkit-transition-delay: 9999s;
+}
 
 .field-group {
   position: relative;

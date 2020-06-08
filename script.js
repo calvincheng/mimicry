@@ -44,9 +44,22 @@ class View {
     const loginCard = document.createElement('div');
     loginCard.className = 'card';
     
+    // Add title
     const cardTitle = document.createElement('h2');
     cardTitle.innerText = 'Log in to Mimicry';
 
+    // Add error message
+    const errorMessageWrapper = document.createElement('div');
+    errorMessageWrapper.className = 'error-wrapper';
+    errorMessageWrapper.style.visibility = 'hidden';
+
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'error';
+    errorMessage.innerText = 'Error';
+
+    errorMessageWrapper.append(errorMessage);
+
+    // Add input fields
     const emailField = this._makeField('text', 'Email', 'emailField');
     const passwordField = this._makeField('password', 'Password', 'passwordField');
 
@@ -57,6 +70,7 @@ class View {
     loginButton.style.width = '100%';
     loginButton.style.marginTop = 1 + 'rem';
 
+    // Add buttons
     const signupButton = document.createElement('button');
     signupButton.id = 'signupButton';
     signupButton.className = 'button secondary';
@@ -64,6 +78,7 @@ class View {
     signupButton.style.width = '100%';
     signupButton.style.marginTop = 0.8 + 'rem';
 
+    // Add forgot password link
     const forgotPwdWrapper = document.createElement('div');
     forgotPwdWrapper.style.textAlign = 'center';
     forgotPwdWrapper.style.margin = '3rem auto -1rem auto';
@@ -74,8 +89,10 @@ class View {
 
     forgotPwdWrapper.append(forgotPwdText);
 
+    // Append all components to card
     loginCard.append(
       cardTitle, 
+      errorMessageWrapper,
       emailField, 
       passwordField, 
       loginButton, 
@@ -217,6 +234,27 @@ class View {
     });
   }
 
+  raiseLoginError(message, highlightEmailField, highlightPasswordField) {
+    const emailField = document.getElementById('emailField');
+    const passwordField = document.getElementById('passwordField');
+
+    // Reset form styles
+    emailField.parentElement.classList.remove('field-failure');
+    passwordField.parentElement.classList.remove('field-failure');
+
+    // Display error message
+    this.loginCard.querySelector('.error-wrapper').style.visibility = 'visible';
+    this.loginCard.querySelector('.error').innerText = message;
+
+    // Change specified input fields to error state if specified
+    if (highlightEmailField) {
+      emailField.parentElement.classList.add('field-failure');
+    }
+    if (highlightPasswordField) {
+      passwordField.parentElement.classList.add('field-failure');
+    }
+  }
+
   raiseSignupError(type) {
     switch (type) {
       case 'differentPasswords':
@@ -284,6 +322,23 @@ class Controller {
   loginUser = (email, password) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .catch((error) => {
+        let message;
+        switch (error.code) {
+          case 'auth/user-not-found':
+            message = 'No account registered under this email.'
+            this.view.raiseLoginError(message, true, false);
+            break;
+          case 'auth/invalid-email':
+            message = 'Please enter a valid email address.';
+            this.view.raiseLoginError(message, true, false);
+            break;
+          case 'auth/wrong-password':
+            message = 'Invalid password. Please try again.';
+            this.view.raiseLoginError(message, false, true);
+            break;
+          default:
+            this.view.raiseLoginError(error.message, true, true);
+        }
         console.log(error.code);
         console.log(error.message);
       });
