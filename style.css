@@ -1,0 +1,142 @@
+/* PRIMARY COLOUR: #d94f4f */
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=fallback');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #210c0c; /*#160808*/
+  color: white;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #dddddd;
+
+  padding: 3rem;
+  background: #2d1010;
+  width: 380px;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.card h2 {
+  margin-bottom: 5rem;
+}
+
+.card a {
+  font-size: 0.8rem;
+  color: #bbb;
+  transition: color 0.3s;
+}
+
+.card a:hover, .card a:focus {
+  outline: none;
+  color: #ddd;
+}
+
+/* INPUT STUFF */
+
+.field-group {
+  position: relative;
+  margin-top: 0.5rem;
+  margin-bottom: 1.8rem;
+  width: 100%
+}
+
+.field-group input {
+  width: 100%;
+  padding-bottom: 4px;
+
+  background: none;
+  border: none;
+  border-bottom: 2px solid #aaa;
+  transition: border-bottom 0.3s ease-out;
+
+  color: #dddddd;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1rem;
+}
+
+.field-group input:focus {
+  outline: none;
+}
+
+.field-failure input,
+.field-failure input:focus {
+  border-bottom: 2px solid red;
+}
+
+.field-group label {
+  position: absolute;
+  top: 0.1rem;
+  left: 0px;
+
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 1rem;
+  color: #aaa;
+
+  pointer-events: none;
+  transition: all 0.2s;
+}
+
+/*.field-group input:focus + label,*/
+.field-group input:not(:placeholder-shown) + label {
+  top: -16px;
+  font-size: 0.6rem;
+}
+
+.field-failure input:not(:placeholder-shown) + label {
+   color: red;
+}
+
+/* BUTTONS */
+
+.button {
+  padding: 0.8rem;
+  background-color: #d94f4f;
+  border: none;
+  border-radius: 0.4rem;
+
+  color: #000000;
+  font-family: 'Nunito Sans', sans-serif;
+  letter-spacing: 0.1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover, .button:focus {
+  outline: none;
+  background-color: #a13b3b;
+}
+
+.secondary {
+  padding: 0.8rem;
+  background: none;
+  border: 1px solid #d94f4f;
+  border-radius: 0.4rem;
+
+  color: #d94f4f;
+}
+
+.secondary:hover, .secondary:focus {
+  outline: none;
+  background-color: #431818;
+}
