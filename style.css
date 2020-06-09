@@ -1,4 +1,6 @@
-/* PRIMARY COLOUR: #d94f4f */
+/* BRAND COLOUR: #d94f4f */
+/* 00dp: #221717
+/* 01dp: #2d2323 */
 
 @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700&display=fallback');
 
@@ -9,7 +11,7 @@
 }
 
 body {
-  background: #210c0c; /*#160808*/
+  background: #221717; /*#160808*/
   color: white;
   font-family: 'Nunito Sans', sans-serif;
 }
@@ -43,14 +45,20 @@ nav {
   transform: translate(-50%, -50%);
 }
 
-.card {
-  color: #dddddd;
+.dp0 {
+  background-color: #221717;
+  box-shadow: none;
+}
 
+.dp1 {
+  background-color: #2d2323;
+  box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20);
+}
+
+.card {
   padding: 3rem;
-  background: #2d1010;
   width: 380px;
   border-radius: 16px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
 .card h2 {
@@ -58,19 +66,19 @@ nav {
 }
 
 .card a {
-  font-size: 0.8rem;
-  color: #bbb;
+  font-size: 0.75rem;
+  color: #a7a2a2;
   transition: color 0.3s;
 }
 
 .card a:hover, .card a:focus {
   outline: none;
-  color: #ddd;
+  color: #e2e1e1;
 }
 
 .card .error-wrapper {
   color: red;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   margin-bottom: 1.5rem;
 
 }
@@ -141,11 +149,8 @@ input:-webkit-autofill:active  {
 
 .button {
   padding: 0.8rem;
-  background-color: #d94f4f;
-  border: none;
   border-radius: 0.4rem;
 
-  color: #000000;
   font-family: 'Nunito Sans', sans-serif;
   letter-spacing: 0.1rem;
   font-size: 1rem;
@@ -153,24 +158,29 @@ input:-webkit-autofill:active  {
   text-transform: uppercase;
 
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
 }
 
-.button:hover, .button:focus {
+.button:focus {
   outline: none;
-  background-color: #a13b3b;
+}
+
+.primary {
+  background-color: #d94f4f;
+  border: none;
+  color: #221717;
+}
+
+.primary:hover, .primary:focus {
+  background-color: #d85959;
 }
 
 .secondary {
-  padding: 0.8rem;
   background: none;
   border: 1px solid #d94f4f;
-  border-radius: 0.4rem;
-
   color: #d94f4f;
 }
 
 .secondary:hover, .secondary:focus {
-  outline: none;
-  background-color: #431818;
+  background-color: #372626;
 }
