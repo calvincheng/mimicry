@@ -26,12 +26,68 @@ let db = firebase.database();
 
 class Model {
   constructor() {
-    this.data = {};
+//       users: {
+//         userId: {
+//           name: "Calvin Cheng",
+//           email: "calvin.cc.cheng@gmail.com",
+//           progress: 4, // 4th word
+//           deck: deckId,
+//         },
+//       },
+// 
+//       cards: {
+//         cardId: {
+//           fr: "{Bonjour}! Je m'appelle Frederick.",
+//           en: "{Hello}! My name is Frederick."
+//         },
+//       },
+// 
+//       decks: {
+//         deckId: {
+//           owner: userId,
+//           cards: [
+//             {
+//               id: cardId,
+//               repetitions: 0,
+//               interval: 1, // in days
+//               interval: 1,
+//               easiness: 0,
+//             }
+//           ],
+//         }
+//       },
   }
 
-  login(token) {
+// /(\{[^\]]*\})/
+
+  _getBracketedWords(string) {
+    // Helper function -- returns an array of bracketed words
+    // e.g. "{Hello} world" returns [Hello]
+    const pattern = /(\{[^\]]*\})/g; // g -- global flag
+    const words = string.match(pattern);
+
+    // Remove brackets
+    words = words.map( word => word.slice(1, -1) );
+
+    return words
+  }
+
+  
+
+  login(user) {
+    // Gets user information for app
     db.ref('/' + token).once('value')
       .then( (snapshot) => this.data = snapshot.val() );
+  }
+
+  signup(user) {
+    const data = {
+      email: user.email,
+      creationTime: new Date().toJSON(),
+      progress: 0,
+      deck: user.uid,
+    };
+    db.ref('users/' + user.uid).set(data);
   }
 }
 
@@ -42,19 +98,23 @@ class View {
   }
 
   showNavbar() {
+    // Create basic nav element
     const nav = document.createElement('nav');
+
+    // Create logo and add to nav
     const logo = document.createElement('img');
     logo.className = 'nav-logo';
     logo.src = './assets/svg/logo_dark.svg';
     logo.ondragstart = () => {return false};
 
     nav.append(logo);
+
     document.body.prepend(nav);
   }
 
   showLoginCard() {
     const loginCard = document.createElement('div');
-    loginCard.className = 'card centered';
+    loginCard.className = 'card dp1 centered';
     
     // Add title
     const cardTitle = document.createElement('h2');
@@ -77,7 +137,7 @@ class View {
 
     const loginButton = document.createElement('button');
     loginButton.id = 'loginButton';
-    loginButton.className = 'button';
+    loginButton.className = 'button primary';
     loginButton.innerText = 'Log in';
     loginButton.style.width = '100%';
     loginButton.style.marginTop = 1 + 'rem';
@@ -119,7 +179,7 @@ class View {
 
   showSignupCard() {
     const signupCard = document.createElement('div');
-    signupCard.className = 'card centered';
+    signupCard.className = 'card dp1 centered';
     
     const cardTitle = document.createElement('h2');
     cardTitle.innerText = 'Sign up to Mimicry';
@@ -141,7 +201,7 @@ class View {
 
     const createAccountButton = document.createElement('button');
     createAccountButton.id = 'createAccountButton';
-    createAccountButton.className = 'button';
+    createAccountButton.className = 'button primary';
     createAccountButton.innerText = 'Create account';
     createAccountButton.style.width = '100%';
     createAccountButton.style.marginTop = 1 + 'rem';
@@ -170,7 +230,7 @@ class View {
 
   showLogoutCard(user) {
     const logoutCard = document.createElement('div');
-    logoutCard.className = 'card centered';
+    logoutCard.className = 'card dp1 centered';
     
     const cardTitle = document.createElement('h2');
     cardTitle.innerText = 'Log out';
@@ -182,7 +242,7 @@ class View {
 
     const logoutButton = document.createElement('button');
     logoutButton.id = 'logoutButton';
-    logoutButton.className = 'button';
+    logoutButton.className = 'button primary';
     logoutButton.innerText = 'Log out';
     logoutButton.style.width = '100%';
     logoutButton.style.marginTop = 1 + 'rem';
@@ -364,6 +424,7 @@ class Controller {
 
   loginUser = (email, password) => {
     firebase.auth().signInWithEmailAndPassword(email, password)
+      .then( user => console.log(user) )
       .catch((error) => {
         let message;
         switch (error.code) {
@@ -395,8 +456,9 @@ class Controller {
       });
   }
 
-  createAccount = (email, password) => {
+  signupUser = (email, password) => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => { this.model.signup(userCredential.user) })
       .catch((error) => {
         let message;
         switch (error.code) {
@@ -431,7 +493,7 @@ class Controller {
     this.view._clearWindow();
     this.view.showSignupCard();
     this.view._bindBackButton(this.showLoginCard);
-    this.view._bindCreateAccountButton(this.createAccount);
+    this.view._bindCreateAccountButton(this.signupUser);
   }
 
   showLogoutCard = (user) => {
