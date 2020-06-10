@@ -97,6 +97,8 @@ class Controller {
     this.model = model;
     this.view = view;
 
+    this.input = '';
+
     let card = {
       fr: '{Tapez} moi sur votre clavier !', 
       en: '{Type} me on your keyboard!',
@@ -211,6 +213,29 @@ class Controller {
   showClozeCard = (card) => {
     this.view._clearWindow();
     this.view.showClozeCard(card);
+    this.listen();
+  }
+
+  listen() {
+    document.addEventListener('keydown', this._fillInput);
+  }
+
+  deafen() {
+    document.removeEventListener('keydown', this._fillInput);
+  }
+
+  _fillInput = (event) => {
+    const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
+    if (!event.key.match(alphanum) && !event.key === 'Backspace') return;
+
+    if (event.key.match(alphanum)) {
+      this.input += event.key;
+    } else if (event.key === 'Backspace') {
+      // Remove last character
+      this.input = this.input.slice(0, -1);
+    }
+    this.view._updateClozeCard(this.input);
+    console.log(this.input);
   }
 
 }

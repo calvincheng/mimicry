@@ -223,6 +223,24 @@ export class View {
     document.body.append(clozeCard);
   }
 
+  _updateClozeCard(input) {
+    // Highlights correct words on cloze card
+    const inputWords = input.trim().split(' ');
+    const targetSpans = document.querySelector('.targetPhrase').children;
+    
+    for (let i = 0; i < targetSpans.length; i++) {
+      const inputWord = inputWords[i];
+      const span = targetSpans[i];
+      const targetWord = span.innerText;
+      
+      if (inputWord === targetWord) {
+        span.classList.add('correct');
+      } else {
+        span.classList.remove('correct');
+      }
+    }
+  }
+
   _isBracketed(string) {
     // Returns true if {string} is bracketed
     const pattern = /(\{[^\]]*\})/; // g -- global flag
