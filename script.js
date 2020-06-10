@@ -62,10 +62,10 @@ class Controller {
 
     this.input = '';
 
-    let card = {
-      fr: '{Tapez} moi sur votre clavier !', 
-      en: '{Type} me on your keyboard!',
-    };
+//     let card = {
+//       fr: '{Tapez} moi sur votre clavier !', 
+//       en: '{Type} me on your keyboard!',
+//     };
 
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
@@ -77,7 +77,7 @@ class Controller {
         let uid = user.uid;
         console.log('Signed in');
 
-        this.showClozeCard(card);
+        this.showClozeCard();
         
       } else {
         // User is signed out.
@@ -177,12 +177,14 @@ class Controller {
     this.view._bindLogoutButton(this.logoutUser);
   }
 
-  showClozeCard = (card) => {
+  showClozeCard = async () => {
     this.view._clearWindow();
     this.view.nav.querySelector('#logoutButton').hidden = false;
+    this.view._bindLogoutButton(this.logoutUser);
+
+    const card = await this.model.getCard();
 
     this.view.showClozeCard(card);
-    this.view._bindLogoutButton(this.logoutUser);
 
     this.input = '';
     this.listen();

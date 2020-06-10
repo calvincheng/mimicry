@@ -225,7 +225,7 @@ export class View {
     for (let word of card.en.split(' ')) {
       if (this._isBracketed(word)) {
         // Remove brackets
-        word = word.slice(1, -1);
+        word = word.replace(/[\{\}]/g, '');
 
         // Target word
         let span = document.createElement('span');
@@ -332,7 +332,6 @@ export class View {
 
   _bindLogoutButton(handler) {
     this.nav.addEventListener('click', (event) => {
-      console.log(event.target.id);
       if (event.target.id !== 'logoutButton') return;
 
       event.target.blur();

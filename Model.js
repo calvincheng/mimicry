@@ -15,12 +15,12 @@ export class Model {
     // Remove brackets
     words = words.map( word => word.slice(1, -1) );
 
-    return words
+    return words;
   }
 
   login(user) {
     // Gets user information for app
-    this.db.ref('/' + token).once('value')
+    this.db.ref('/users' + user.uid).once('value')
       .then( (snapshot) => this.data = snapshot.val() );
   }
 
@@ -32,5 +32,10 @@ export class Model {
       deck: user.uid,
     };
     this.db.ref('users/' + user.uid).set(data);
+  }
+
+  async getCard() {
+    const data = await this.db.ref('cards/1').once('value')
+    return data.val();
   }
 }
