@@ -207,7 +207,7 @@ export class View {
     for (let word of card.fr.split(' ')) {
       if (this._isBracketed(word)) {
         // Cloze word
-        word = word.slice(1, -1);
+        word = word.replace(/[\{\}]/g, '');
       }
 
       let span = document.createElement('span');
@@ -256,9 +256,11 @@ export class View {
 
     let complete = true;
     for (let i = 0; i < targetSpans.length; i++) {
-      const inputWord = inputWords[i];
+      const removePunc = /[\,\.\']/;
+      let inputWord = inputWords[i];
+      inputWord = inputWord ? inputWord.replace(removePunc, '') : inputWord;
       const span = targetSpans[i];
-      const targetWord = span.innerText;
+      const targetWord = span.innerText.replace(removePunc, '');
       
       if (inputWord === targetWord) {
         span.classList.add('correct');
@@ -275,7 +277,8 @@ export class View {
 
   _isBracketed(string) {
     // Returns true if {string} is bracketed
-    const pattern = /(\{[^\]]*\})/; // g -- global flag
+    // const pattern = /(\{[^\]]*\})/; // g -- global flag
+    const pattern = /[\{\}]/;
     return string.match(pattern);
   }
 
