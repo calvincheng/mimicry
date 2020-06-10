@@ -220,7 +220,26 @@ export class View {
 
     const nativePhrase = document.createElement('p');
     nativePhrase.className = 'nativePhrase';
-    nativePhrase.innerText = card.en;
+
+    // Populate nativePhrase element
+    for (let word of card.en.split(' ')) {
+      if (this._isBracketed(word)) {
+        // Remove brackets
+        word = word.slice(1, -1);
+
+        // Target word
+        let span = document.createElement('span');
+        span.className = 'targetWord';
+        span.innerText = word;
+
+        nativePhrase.append(span)
+
+        // Add space before and after targetWord
+        span.insertAdjacentHTML('afterend', ' ');
+      } else {
+        nativePhrase.append(word + ' ');
+      }
+    }
 
     clozeCard.append(targetPhrase, nativePhrase);
 

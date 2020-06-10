@@ -92,6 +92,8 @@ nav a {
   margin-bottom: 1.5rem;
 }
 
+/* Cloze -------------- */
+
 .cloze {
   min-width: 680px;
   width: 50vw;
@@ -117,6 +119,8 @@ nav a {
   color: #77e77c;
 }
 
+.targetWord
+
 .nativePhrase {
   color: #a7a2a2;
 }
@@ -126,13 +130,6 @@ nav a {
 }
 
 /* INPUT STUFF */
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus,
-input:-webkit-autofill:active  {
-  -webkit-transition-delay: 9999s;
-}
 
 .field-group {
   position: relative;
