@@ -12,13 +12,17 @@ export class View {
     const logo = document.createElement('img');
     logo.className = 'nav-logo';
     logo.src = './assets/svg/logo_dark.svg';
-    logo.ondragstart = () => {return false};
 
+    // Create nav links
     const navLinks = document.createElement('ul');
+
     const signoutNavLink = document.createElement('li');
+
     const signoutLink = document.createElement('a');
-    signoutLink.id = 'signoutLink';
+    signoutLink.id = 'logoutButton';
     signoutLink.innerText = 'Sign out';
+
+    signoutLink.hidden = true;
 
     signoutNavLink.append(signoutLink);
     navLinks.append(signoutNavLink);
@@ -299,7 +303,8 @@ export class View {
   }
 
   _bindLogoutButton(handler) {
-    this.logoutCard.addEventListener('click', (event) => {
+    this.nav.addEventListener('click', (event) => {
+      console.log(event.target.id);
       if (event.target.id !== 'logoutButton') return;
 
       event.target.blur();

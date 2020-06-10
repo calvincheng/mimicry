@@ -40,6 +40,10 @@ nav ul {
   list-style: none;
 }
 
+nav a {
+  cursor: pointer;
+}
+
 .nav-logo {
   width: 124px;
 }
