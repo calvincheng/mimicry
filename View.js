@@ -230,8 +230,12 @@ export class View {
   _updateClozeCard(input) {
     // Highlights correct words on cloze card
     const inputWords = input.trim().split(' ');
-    const targetSpans = document.querySelector('.targetPhrase').children;
+    const targetPhrase = document.querySelector('.targetPhrase');
+    const targetSpans = targetPhrase.children;
     
+    targetPhrase.classList.remove('complete'); // TODO: REMOVE AFTER TESTING
+
+    let complete = true;
     for (let i = 0; i < targetSpans.length; i++) {
       const inputWord = inputWords[i];
       const span = targetSpans[i];
@@ -241,7 +245,12 @@ export class View {
         span.classList.add('correct');
       } else {
         span.classList.remove('correct');
+        complete = false;
       }
+    }
+
+    if (complete) {
+      targetPhrase.classList.add('complete');
     }
   }
 

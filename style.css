@@ -109,6 +109,10 @@ nav a {
   color: #766f6f;
 }
 
+.complete span {
+  color: green;
+}
+
 .nativePhrase {
   color: #a7a2a2;
 }
