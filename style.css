@@ -25,13 +25,19 @@ nav {
   position: fixed;
   top: 0;
   left: 0;
-  height: 15vh;
-  min-height: 160px;
+  height: 14vh;
+  min-height: 132px;
   width: 100%;
 
   display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   padding: 36px;
+}
+
+nav ul {
+  list-style: none;
 }
 
 .nav-logo {
@@ -80,7 +86,31 @@ nav {
   color: red;
   font-size: 0.75rem;
   margin-bottom: 1.5rem;
+}
 
+.cloze {
+  min-width: 680px;
+  width: 50vw;
+}
+
+.correct {
+  color: #e2e1e1;
+}
+
+.targetPhrase {
+  font-weight: 600;
+  font-size: 2.2rem;
+  margin-top: 3rem;
+  margin-bottom: 7rem;
+  color: #766f6f;
+}
+
+.nativePhrase {
+  color: #a7a2a2;
+}
+
+.targetWord {
+  color: #d94f4f;
 }
 
 /* INPUT STUFF */
