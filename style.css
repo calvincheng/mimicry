@@ -97,16 +97,20 @@ nav a {
   width: 50vw;
 }
 
-.correct {
-  color: #e2e1e1;
-}
-
 .targetPhrase {
   font-weight: 600;
   font-size: 2.2rem;
   margin-top: 3rem;
   margin-bottom: 7rem;
   color: #766f6f;
+}
+
+.targetPhrase span {
+  transition: color 0.2s;
+}
+
+.correct {
+  color: #e2e1e1;
 }
 
 .complete span {
