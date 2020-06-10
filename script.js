@@ -13,19 +13,6 @@
 //     });
 // });
 
-import { config } from './config.js';
-let firebaseConfig = config.firebase;
-firebase.initializeApp(firebaseConfig);
-
-let auth = firebase.auth();
-let provider = new firebase.auth.GoogleAuthProvider();
-
-let db = firebase.database();
-
-// ----------------------------
-
-class Model {
-  constructor() {
 //       users: {
 //         userId: {
 //           name: "Calvin Cheng",
@@ -50,12 +37,28 @@ class Model {
 //               id: cardId,
 //               repetitions: 0,
 //               interval: 1, // in days
-//               interval: 1,
 //               easiness: 0,
 //             }
 //           ],
 //         }
 //       },
+//
+import { config } from './config.js';
+let firebaseConfig = config.firebase;
+firebase.initializeApp(firebaseConfig);
+
+let auth = firebase.auth();
+let provider = new firebase.auth.GoogleAuthProvider();
+
+let db = firebase.database();
+
+// ----------------------------
+
+class Model {
+  constructor() {
+    this.session = {
+      user: null,
+    }
   }
 
 // /(\{[^\]]*\})/
@@ -71,8 +74,6 @@ class Model {
 
     return words
   }
-
-  
 
   login(user) {
     // Gets user information for app
@@ -135,6 +136,7 @@ class View {
     const emailField = this._makeField('text', 'Email', 'emailField');
     const passwordField = this._makeField('password', 'Password', 'passwordField');
 
+    // Add buttons
     const loginButton = document.createElement('button');
     loginButton.id = 'loginButton';
     loginButton.className = 'button primary';
@@ -142,13 +144,25 @@ class View {
     loginButton.style.width = '100%';
     loginButton.style.marginTop = 1 + 'rem';
 
-    // Add buttons
     const signupButton = document.createElement('button');
     signupButton.id = 'signupButton';
     signupButton.className = 'button secondary';
     signupButton.innerText = 'Sign up';
     signupButton.style.width = '100%';
     signupButton.style.marginTop = 0.8 + 'rem';
+
+    // Bind enter key event to login button
+    emailField.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        loginButton.click();
+      }
+    });
+
+    passwordField.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        loginButton.click();
+      }
+    });
 
     // Add forgot password link
     const forgotPwdWrapper = document.createElement('div');
@@ -258,6 +272,9 @@ class View {
     document.body.append(logoutCard);
   }
 
+  makeClozeCard(card) {
+  }
+
   _bindSignupButton(handler) {
     this.loginCard.addEventListener('click', (event) => {
       if (event.target.id !== 'signupButton') return;
@@ -276,7 +293,6 @@ class View {
       let password = document.getElementById('passwordField').value;
 
       handler(email, password)
-
     });
   }
 
@@ -472,6 +488,10 @@ class Controller {
             break;
           case 'auth/wrong-password':
             message = 'Invalid password. Please try again.';
+            this.view.raiseSignupError(message, false, true);
+            break;
+          case 'auth/weak-password':
+            message = 'The password must be at least 6 characters long.';
             this.view.raiseSignupError(message, false, true);
             break;
           default:
