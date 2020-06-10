@@ -192,6 +192,8 @@ class Controller {
 
   showLoginCard = () => {
     this.view._clearWindow();
+    this.view.nav.querySelector('#logoutButton').hidden = true;
+
     this.view.showLoginCard();
     this.view._bindLoginButton(this.loginUser);
     this.view._bindSignupButton(this.showSignupCard);
@@ -215,6 +217,7 @@ class Controller {
   showClozeCard = (card) => {
     this.view._clearWindow();
     this.view.nav.querySelector('#logoutButton').hidden = false;
+
     this.view.showClozeCard(card);
     this.view._bindLogoutButton(this.logoutUser);
 
