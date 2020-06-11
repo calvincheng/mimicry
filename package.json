@@ -1,20 +1,19 @@
 {
-  "name": "mimic",
-  "version": "0.0.0",
-  "description": "Mimic app for voice-controlled cloze deletion.",
-  "main": "index.js",
+  "name": "mimicry",
+  "version": "1.0.0",
+  "description": "Voice-activated cloze flashcards",
+  "main": "App.js",
   "scripts": {
-    "start": "electron ."
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "voice",
-    "cloze",
-    "language",
-    "learning"
-  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calvincheng/Mimicry.git"
+  },
   "author": "Calvin Cheng",
-  "license": "MIT",
-  "devDependencies": {
-    "electron": "^8.2.5"
-  }
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/calvincheng/Mimicry/issues"
+  },
+  "homepage": "https://github.com/calvincheng/Mimicry#readme"
 }
