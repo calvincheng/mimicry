@@ -20,7 +20,7 @@ export class Model {
 
   login(user) {
     // Gets user information for app
-    this.db.ref('/users' + user.uid).once('value')
+    this.db.ref('/users/' + user.uid).once('value')
       .then( (snapshot) => this.data = snapshot.val() );
   }
 
@@ -31,11 +31,11 @@ export class Model {
       progress: 0,
       deck: user.uid,
     };
-    this.db.ref('users/' + user.uid).set(data);
+    this.db.ref('/users/' + user.uid).set(data);
   }
 
   async getCard() {
-    const data = await this.db.ref('cards/1').once('value')
+    const data = await this.db.ref('/cards/2').once('value');
     return data.val();
   }
 }
