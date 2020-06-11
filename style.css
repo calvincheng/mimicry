@@ -95,8 +95,9 @@ nav a {
 /* Cloze -------------- */
 
 .cloze {
-  min-width: 680px;
-  width: 50vw;
+  min-width: 480px;
+  max-width: 720px;
+  width: 70vw;
 }
 
 .targetPhrase {
@@ -186,6 +187,10 @@ nav a {
 
 /* BUTTONS */
 
+.buttons .icon {
+  margin-left: 12px;
+}
+
 .button {
   padding: 0.8rem;
   border-radius: 0.4rem;
@@ -198,6 +203,10 @@ nav a {
 
   cursor: pointer;
   transition: background-color 0.2s;
+}
+
+.button img { /* For icons */
+  cursor: pointer;
 }
 
 .button:focus {
@@ -222,4 +231,11 @@ nav a {
 
 .secondary:hover, .secondary:focus {
   background-color: #372626;
+}
+
+.icon {
+  position: relative;
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
 }

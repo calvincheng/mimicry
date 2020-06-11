@@ -340,7 +340,6 @@ export class View {
       }
 
       handler(email, password);
-
     });
   }
 
@@ -351,11 +350,19 @@ export class View {
       event.target.blur();
 
       handler();
-
     });
   }
 
   _bindSpeakButton(handler) {
+    this.clozeCard.addEventListener('click', (event) => {
+      if (event.target.id !== 'speakButton' && 
+          !event.target.matches('#speakButton img')) return;
+      
+      event.target.closest('.button').blur();
+
+      const phrase = document.querySelector('.targetPhrase').innerText.trim();
+      handler(phrase)
+    });
   }
 
   raiseLoginError(message, highlightEmailField, highlightPasswordField) {

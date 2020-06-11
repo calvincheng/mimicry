@@ -171,23 +171,25 @@ class Controller {
     this.view.nav.querySelector('#logoutButton').hidden = false;
     this.view._bindLogoutButton(this.logoutUser);
 
-    const card = await this.model.getCard();
+    // const card = await this.model.getCard();
+    const card = {fr: "{Merci}, Monsieur", en: "{Thank you}, sir!"}
 
     this.view.showClozeCard(card);
+    this.view._bindSpeakButton(this.speakPhrase);
 
     this.input = '';
     this.listen();
   }
 
   listen() {
-    document.addEventListener('keydown', this._fillInput);
+    document.addEventListener('keydown', this.fillInput);
   }
 
   deafen() {
-    document.removeEventListener('keydown', this._fillInput);
+    document.removeEventListener('keydown', this.fillInput);
   }
 
-  _fillInput = (event) => {
+  fillInput = (event) => {
     const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
     if (!event.key.match(alphanum) && !event.key === 'Backspace') return;
 
@@ -201,7 +203,23 @@ class Controller {
     console.log(this.input);
   }
 
-  speakTargetPhrase = () => {
+  speakPhrase = async (phrase) => {
+    const utterance = new SpeechSynthesisUtterance(phrase);
+    if (speechSynthesis.getVoices().length > 0) {
+      // 3: Amelie fr-CA, 37: Thomas fr-FR, 53: Google français fr-FR
+      utterance.voice = speechSynthesis.getVoices()[53]; 
+      speechSynthesis.speak(utterance);
+
+      // Clear utterance queue after speaking in case of spammed button
+      utterance.onend = () => { speechSynthesis.cancel() };
+    } else {
+      // If voices haven't loaded yet, add event listener to 
+      // call speakPhrase again when ready
+      console.log('Waiting for voices to populate');
+      speechSynthesis.addEventListener('voiceschanged', (event) => {
+        this.speakPhrase(phrase);
+      });
+    }
   }
 
 }
