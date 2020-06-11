@@ -200,6 +200,7 @@ export class View {
     clozeCard.className = 'card cloze centered dp1';
     clozeCard.id = 'clozeCard';
     
+    // Generate target phrase
     const targetPhrase = document.createElement('p');
     targetPhrase.className = 'targetPhrase';
 
@@ -217,6 +218,14 @@ export class View {
       // Add space between words
       targetPhrase.insertAdjacentHTML('beforeend', ' ');
     }
+
+    // Add nativePhrase and buttons to bottom wrapper
+    const bottomWrapper = document.createElement('div');
+
+    // Apply basic styles to wrapper
+    bottomWrapper.style.display = 'flex';
+    bottomWrapper.style.justifyContent = 'space-between';
+    bottomWrapper.style.alignItems = 'flex-end';
 
     const nativePhrase = document.createElement('p');
     nativePhrase.className = 'nativePhrase';
@@ -241,7 +250,39 @@ export class View {
       }
     }
 
-    clozeCard.append(targetPhrase, nativePhrase);
+    // Generate buttons
+    const buttons = document.createElement('div');
+    buttons.className = 'buttons';
+
+    // Micrphone button
+    const microphoneButton = document.createElement('button');
+    microphoneButton.id = 'microphoneButton';
+    microphoneButton.className = 'button primary icon';
+
+    const microphoneIcon = document.createElement('img');
+    microphoneIcon.className = 'centered';
+    microphoneIcon.src = './assets/svg/microphone_white.svg';
+    microphoneIcon.style.width = 14 + 'px';
+    microphoneButton.append(microphoneIcon);
+
+    // Speak button
+    const speakButton = document.createElement('button');
+    speakButton.id = 'speakButton';
+    speakButton.className = 'button primary icon';
+
+    const speakIcon = document.createElement('img');
+    speakIcon.className = 'centered';
+    speakIcon.src = './assets/svg/speaker_white.svg';
+    speakIcon.style.width = 20 + 'px';
+    speakButton.append(speakIcon);
+
+    buttons.append(microphoneButton, speakButton);
+
+    bottomWrapper.append(nativePhrase, buttons);
+
+    clozeCard.append(targetPhrase, bottomWrapper);
+
+    this.clozeCard = clozeCard;
 
     document.body.append(clozeCard);
   }
@@ -342,6 +383,9 @@ export class View {
       handler();
 
     });
+  }
+
+  _bindSpeakButton(handler) {
   }
 
   raiseLoginError(message, highlightEmailField, highlightPasswordField) {
