@@ -62,11 +62,6 @@ class Controller {
 
     this.input = '';
 
-//     let card = {
-//       fr: '{Tapez} moi sur votre clavier !', 
-//       en: '{Type} me on your keyboard!',
-//     };
-
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
@@ -87,6 +82,36 @@ class Controller {
 
       }
     });
+  }
+
+  signupUser = (email, password) => {
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+      .then((userCredential) => { this.model.signup(userCredential.user) })
+      .catch((error) => {
+        let message;
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            message = 'The email address is already registered.'
+            this.view.raiseSignupError(message, true, false);
+            break;
+          case 'auth/invalid-email':
+            message = 'Please enter a valid email address.';
+            this.view.raiseSignupError(message, true, false);
+            break;
+          case 'auth/wrong-password':
+            message = 'Invalid password. Please try again.';
+            this.view.raiseSignupError(message, false, true);
+            break;
+          case 'auth/weak-password':
+            message = 'The password must be at least 6 characters long.';
+            this.view.raiseSignupError(message, false, true);
+            break;
+          default:
+            this.view.raiseSignupError(error.message, true, true);
+        }
+        console.log(error.code);
+        console.log(error.message);
+      });
   }
 
   loginUser = (email, password) => {
@@ -123,36 +148,6 @@ class Controller {
       });
   }
 
-  signupUser = (email, password) => {
-    firebase.auth().createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => { this.model.signup(userCredential.user) })
-      .catch((error) => {
-        let message;
-        switch (error.code) {
-          case 'auth/email-already-in-use':
-            message = 'The email address is already registered.'
-            this.view.raiseSignupError(message, true, false);
-            break;
-          case 'auth/invalid-email':
-            message = 'Please enter a valid email address.';
-            this.view.raiseSignupError(message, true, false);
-            break;
-          case 'auth/wrong-password':
-            message = 'Invalid password. Please try again.';
-            this.view.raiseSignupError(message, false, true);
-            break;
-          case 'auth/weak-password':
-            message = 'The password must be at least 6 characters long.';
-            this.view.raiseSignupError(message, false, true);
-            break;
-          default:
-            this.view.raiseSignupError(error.message, true, true);
-        }
-        console.log(error.code);
-        console.log(error.message);
-      });
-  }
-
   showLoginCard = () => {
     this.view._clearWindow();
     this.view.nav.querySelector('#logoutButton').hidden = true;
@@ -169,12 +164,6 @@ class Controller {
     this.view.showSignupCard();
     this.view._bindBackButton(this.showLoginCard);
     this.view._bindCreateAccountButton(this.signupUser);
-  }
-
-  showLogoutCard = (user) => {
-    this.view._clearWindow();
-    this.view.showLogoutCard(user);
-    this.view._bindLogoutButton(this.logoutUser);
   }
 
   showClozeCard = async () => {
@@ -210,6 +199,9 @@ class Controller {
     }
     this.view._updateClozeCard(this.input);
     console.log(this.input);
+  }
+
+  speakTargetPhrase = () => {
   }
 
 }

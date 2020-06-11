@@ -163,36 +163,6 @@ export class View {
     document.body.append(signupCard);
   }
 
-  showLogoutCard(user) {
-    const logoutCard = document.createElement('div');
-    logoutCard.className = 'card dp1 centered';
-    
-    const cardTitle = document.createElement('h2');
-    cardTitle.innerText = 'Log out';
-
-    const userInfo = document.createElement('p');
-    userInfo.style.wordBreak = 'break-all';
-    //user.getIdToken().then((token) => userInfo.innerText = token);
-    userInfo.innerText = user.email;
-
-    const logoutButton = document.createElement('button');
-    logoutButton.id = 'logoutButton';
-    logoutButton.className = 'button primary';
-    logoutButton.innerText = 'Log out';
-    logoutButton.style.width = '100%';
-    logoutButton.style.marginTop = 1 + 'rem';
-
-    logoutCard.append(
-      cardTitle, 
-      userInfo,
-      logoutButton, 
-    );
-
-    this.logoutCard = logoutCard;
-
-    document.body.append(logoutCard);
-  }
-
   showClozeCard(card) {
     // card = {fr: '{Tapez} moi sur votre clavier !', en: '{Type} me on your keyboard!'}
 
