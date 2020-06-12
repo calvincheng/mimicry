@@ -3,28 +3,36 @@ export class Controller {
     this.model = model;
     this.view = view;
 
+    this.progress = 0; // new user
     this.input = '';
-    this.showClozeCard();
-//     firebase.auth().onAuthStateChanged((user) => {
-//       if (user) {
-//         // User is signed in.
-//         let displayName = user.displayName;
-//         let email = user.email;
-//         let emailVerified = user.emailVerified;
-//         let photoURL = user.photoURL;
-//         let uid = user.uid;
-//         console.log('Signed in');
-// 
-//         this.showClozeCard();
-//         
-//       } else {
-//         // User is signed out.
-//         console.log('Signed out');
-// 
-//         this.showLoginCard();
-// 
-//       }
-//     });
+    // this.init();
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in.
+        let displayName = user.displayName;
+        let email = user.email;
+        let emailVerified = user.emailVerified;
+        let photoURL = user.photoURL;
+        let uid = user.uid;
+        console.log('Signed in');
+
+        this.init();
+        
+      } else {
+        // User is signed out.
+        console.log('Signed out');
+
+        this.showLoginCard();
+
+      }
+    });
+  }
+
+  init = async () => {
+    let card = await this.model.getCard(this.progress);
+    // let card = {fr: "{Salut} ! Tout le monde !", en: "{Hi}, everyone!"};
+    this.showClozeCard(card);
   }
 
   signupUser = (email, password) => {
@@ -109,13 +117,12 @@ export class Controller {
     this.view._bindCreateAccountButton(this.signupUser);
   }
 
-  showClozeCard = async () => {
+  showClozeCard = (card) => {
     this.view._clearWindow();
     this.view.nav.querySelector('#logoutButton').hidden = false;
     this.view._bindLogoutButton(this.logoutUser);
 
-    // const card = await this.model.getCard();
-    const card = {fr: "{Merci}, Monsieur", en: "{Thank you}, sir!"}
+    this.currentCard = card;
 
     this.view.showClozeCard(card);
     this.view._bindSpeakButton(this.speakPhrase);
@@ -125,25 +132,75 @@ export class Controller {
   }
 
   listen() {
-    document.addEventListener('keydown', this.fillInput);
+    document.addEventListener('keydown', this.readInput);
   }
 
   deafen() {
-    document.removeEventListener('keydown', this.fillInput);
+    document.removeEventListener('keydown', this.readInput);
   }
 
-  fillInput = (event) => {
+  checkInput = () => {
+    const removeBrackets = /[\{\}]/g;
+
+    const inputWords = this.input.trim().split(' ');
+    const targetWords = this.currentCard.fr.replace(removeBrackets, '').split(' ');
+
+    let skip = 0; // For offsetting word comparison (i.e. skip = 1 --> input[2] vs target[3])
+    let correct = true;
+    let correctIdxs = [];
+    for (let i = 0; i < targetWords.length; i++) {
+      const removePunc = /[\,\.]/g;
+      const inputWord = inputWords[i-skip] ? inputWords[i-skip].replace(removePunc, '') : null;
+      const targetWord = targetWords[i].replace(removePunc, '');
+      
+      const checkPunc = /[\!\«\»]/;
+      
+      // If input matches target, OR 
+      // target is a special punctuation mark following a correct word
+      if (targetWord.match(checkPunc) && correctIdxs.includes(i - 1)) {
+        correctIdxs.push(i);
+        skip += 1;
+      } else if (inputWord && inputWord.toLowerCase() === targetWord.toLowerCase()) {
+        correctIdxs.push(i);
+      } else {
+        correct = false;
+      }
+    }
+
+    const result = {correctIdxs: correctIdxs, correct: correct}
+
+    return result;
+
+  }
+
+  readInput = (event) => {
     const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
     if (!event.key.match(alphanum) && !event.key == 'Backspace') return;
-    event.preventDefault();
 
     if (event.key.match(alphanum)) {
       this.input += event.key;
     } else if (event.key === 'Backspace') {
+      event.preventDefault(); // Stop going to previous page
+
       // Remove last character
       this.input = this.input.slice(0, -1);
     }
-    this.view._updateClozeCard(this.input);
+
+    // Check if input matches card
+    const result = this.checkInput();
+
+    // Update view
+    this.view._highlightWords(result.correctIdxs);
+    if (result.correct) { 
+      this.view._markCorrect();
+      this.deafen();
+
+      this.progress += 1;
+
+      setTimeout(() => {
+        this.init()
+      }, 1500);
+    }
     console.log(this.input);
   }
 

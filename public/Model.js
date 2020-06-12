@@ -33,8 +33,8 @@ export class Model {
   firebase.database().ref('/users/' + user.uid).set(data);
   }
 
-  async getCard() {
-    const data = await firebase.database().ref('/cards/2').once('value');
+  async getCard(cardId) {
+    const data = await firebase.database().ref('/cards/' + cardId).once('value');
     return data.val();
   }
 }
