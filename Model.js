@@ -1,6 +1,5 @@
 export class Model {
   constructor() {
-    this.db = firebase.database();
     this.session = {
       user: null,
     }
@@ -20,7 +19,7 @@ export class Model {
 
   login(user) {
     // Gets user information for app
-    this.db.ref('/users/' + user.uid).once('value')
+    firebase.database().ref('/users/' + user.uid).once('value')
       .then( (snapshot) => this.data = snapshot.val() );
   }
 
@@ -31,11 +30,11 @@ export class Model {
       progress: 0,
       deck: user.uid,
     };
-    this.db.ref('/users/' + user.uid).set(data);
+  firebase.database().ref('/users/' + user.uid).set(data);
   }
 
   async getCard() {
-    const data = await this.db.ref('/cards/2').once('value');
+    const data = await firebase.database().ref('/cards/2').once('value');
     return data.val();
   }
 }
