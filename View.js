@@ -257,33 +257,25 @@ export class View {
     document.body.append(clozeCard);
   }
 
-  _updateClozeCard(input) {
+  _highlightWords(correctIdxs) {
     // Highlights correct words on cloze card
-    const inputWords = input.trim().split(' ');
     const targetPhrase = document.querySelector('.targetPhrase');
     const targetSpans = targetPhrase.children;
-    
-    targetPhrase.classList.remove('complete'); // TODO: REMOVE AFTER TESTING
 
-    let complete = true;
-    for (let i = 0; i < targetSpans.length; i++) {
-      const removePunc = /[\,\.\']/;
-      let inputWord = inputWords[i];
-      inputWord = inputWord ? inputWord.replace(removePunc, '') : inputWord;
+    // Remove previous styling
+    targetPhrase.classList.remove('complete');
+    for (let span of targetSpans) {
+      span.classList.remove('correct');
+    }
+
+    for (let i of correctIdxs) {
       const span = targetSpans[i];
-      const targetWord = span.innerText.replace(removePunc, '');
-      
-      if (inputWord === targetWord) {
-        span.classList.add('correct');
-      } else {
-        span.classList.remove('correct');
-        complete = false;
-      }
+      span.classList.add('correct');
     }
+  }
 
-    if (complete) {
-      targetPhrase.classList.add('complete');
-    }
+  _markCorrect() {
+    document.querySelector('.targetPhrase').classList.add('complete');
   }
 
   _isBracketed(string) {
