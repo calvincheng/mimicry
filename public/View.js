@@ -43,15 +43,11 @@ export class View {
     cardTitle.innerText = 'Log in to Mimicry';
 
     // Add error message
-    const errorMessageWrapper = document.createElement('div');
-    errorMessageWrapper.className = 'error-wrapper';
-    errorMessageWrapper.style.visibility = 'hidden';
-
     const errorMessage = document.createElement('p');
     errorMessage.className = 'error';
     errorMessage.innerText = 'Error';
-
-    errorMessageWrapper.append(errorMessage);
+    errorMessage.style.visibility = 'hidden';
+    errorMessage.style.marginBottom = 1.5 + 'rem';
 
     // Add input fields
     const emailField = this._makeField('text', 'Email', 'emailField');
@@ -86,30 +82,110 @@ export class View {
     });
 
     // Add forgot password link
-    const forgotPwdWrapper = document.createElement('div');
-    forgotPwdWrapper.style.textAlign = 'center';
-    forgotPwdWrapper.style.margin = '3rem auto -1rem auto';
+    const forgotPasswordWrapper = document.createElement('div');
+    forgotPasswordWrapper.style.textAlign = 'center';
+    forgotPasswordWrapper.style.margin = '3rem auto -1rem auto';
 
-    const forgotPwdText = document.createElement('a');
-    forgotPwdText.href = '#';
-    forgotPwdText.innerText = 'Forgot password?'
+    const forgotPasswordLink = document.createElement('a');
+    forgotPasswordLink.id = 'forgotPasswordLink';
+    forgotPasswordLink.innerText = 'Forgot password?';
 
-    forgotPwdWrapper.append(forgotPwdText);
+    forgotPasswordWrapper.append(forgotPasswordLink);
 
     // Append all components to card
     loginCard.append(
       cardTitle, 
-      errorMessageWrapper,
+      errorMessage,
       emailField, 
       passwordField, 
       loginButton, 
       signupButton, 
-      forgotPwdWrapper
+      forgotPasswordWrapper
     );
 
-    this.loginCard = loginCard;
+    this.currentCard = loginCard;
 
     document.body.append(loginCard);
+  }
+
+  showForgotPasswordCard() {
+    const forgotPasswordCard = document.createElement('div');
+    forgotPasswordCard.className = 'card dp1 centered';
+
+    const cardTitle = document.createElement('h2');
+    cardTitle.innerText = 'Reset password';
+
+    // Add description
+    const description = document.createElement('p');
+    description.innerText = 'We\'ll send you a link to reset your password.';
+    description.style.marginBottom = 1.5 + 'rem';
+
+    // Add error message
+    const errorMessage = document.createElement('p');
+    errorMessage.className = 'error';
+    errorMessage.innerText = 'Error';
+    errorMessage.style.visibility = 'hidden';
+    errorMessage.style.marginBottom = 1.5 + 'rem';
+    
+    // Add email field
+    const emailField = this._makeField('text', 'Email', 'emailField');
+
+    // Add buttons
+    const sendButton = document.createElement('button');
+    sendButton.id = 'sendButton';
+    sendButton.className = 'button primary';
+    sendButton.innerText = 'Send';
+    sendButton.style.width = '100%';
+    sendButton.style.marginTop = 1 + 'rem';
+
+    const backButton = document.createElement('button');
+    backButton.id = 'backToLoginButton';
+    backButton.className = 'button secondary';
+    backButton.innerText = 'Back';
+    backButton.style.width = '100%';
+    backButton.style.marginTop = 0.8 + 'rem';
+
+    // Append all components to card
+    forgotPasswordCard.append(
+      cardTitle, 
+      description,
+      errorMessage,
+      emailField, 
+      sendButton, 
+      backButton, 
+    );
+
+    this.currentCard = forgotPasswordCard;
+
+    document.body.append(forgotPasswordCard);
+  }
+
+  showForgotPasswordSuccessCard() {
+    const forgotPasswordSuccessCard = document.createElement('div');
+    forgotPasswordSuccessCard.className = 'card dp1 centered';
+
+    const cardTitle = document.createElement('h2');
+    cardTitle.innerText = 'Success';
+
+    const message = document.createElement('p');
+    message.innerText = 'Your password reset link has been emailed.';
+
+    const backButton = document.createElement('button');
+    backButton.id = 'backToLoginButton';
+    backButton.className = 'button primary';
+    backButton.innerText = 'Back';
+    backButton.style.width = '100%';
+    backButton.style.marginTop = 1.5 + 'rem';
+
+    forgotPasswordSuccessCard.append(
+      cardTitle,
+      message,
+      backButton,
+    );
+
+    this.currentCard = forgotPasswordSuccessCard;
+
+    document.body.append(forgotPasswordSuccessCard);
   }
 
   showSignupCard() {
@@ -120,15 +196,11 @@ export class View {
     cardTitle.innerText = 'Sign up to Mimicry';
 
     // Add error message
-    const errorMessageWrapper = document.createElement('div');
-    errorMessageWrapper.className = 'error-wrapper';
-    errorMessageWrapper.style.visibility = 'hidden';
-
     const errorMessage = document.createElement('p');
     errorMessage.className = 'error';
     errorMessage.innerText = 'Error';
-
-    errorMessageWrapper.append(errorMessage);
+    errorMessage.style.visibility = 'hidden';
+    errorMessage.style.marginBottom = 1.5 + 'rem';
 
     const emailField = this._makeField('text', 'Email', 'emailField');
     const passwordField = this._makeField('password', 'Password', 'passwordField');
@@ -150,7 +222,7 @@ export class View {
 
     signupCard.append(
       cardTitle, 
-      errorMessageWrapper,
+      errorMessage,
       emailField, 
       passwordField, 
       passwordConfirmField, 
@@ -158,7 +230,7 @@ export class View {
       backButton
     );
 
-    this.signupCard = signupCard;
+    this.currentCard = signupCard;
 
     document.body.append(signupCard);
   }
@@ -252,7 +324,7 @@ export class View {
 
     clozeCard.append(targetPhrase, bottomWrapper);
 
-    this.clozeCard = clozeCard;
+    this.currentCard = clozeCard;
 
     document.body.append(clozeCard);
   }
@@ -285,29 +357,47 @@ export class View {
     return string.match(pattern);
   }
 
+  _bindLoginButton(handler) {
+    this.currentCard.addEventListener('click', (event) => {
+      if (event.target.id !== 'loginButton') return;
+
+      event.target.blur();
+
+      const email = document.getElementById('emailField').value;
+      const password = document.getElementById('passwordField').value;
+
+      handler(email, password)
+    });
+  }
+
   _bindSignupButton(handler) {
-    this.loginCard.addEventListener('click', (event) => {
+    this.currentCard.addEventListener('click', (event) => {
       if (event.target.id !== 'signupButton') return;
       event.target.blur();
       handler();
     });
   }
 
-  _bindLoginButton(handler) {
-    this.loginCard.addEventListener('click', (event) => {
-      if (event.target.id !== 'loginButton') return;
-
+  _bindForgotPasswordLink(handler) {
+    this.currentCard.addEventListener('click', (event) => {
+      if (event.target.id !== 'forgotPasswordLink') return;
       event.target.blur();
-
-      let email = document.getElementById('emailField').value;
-      let password = document.getElementById('passwordField').value;
-
-      handler(email, password)
+      handler();
     });
   }
 
-  _bindBackButton(handler) {
-    this.signupCard.addEventListener('click', (event) => {
+  _bindSendPasswordResetButton(handler) {
+    this.currentCard.addEventListener('click', (event) => {
+      if (event.target.id !== 'sendButton') return;
+      event.target.blur();
+
+      const email = document.getElementById('emailField').value;
+      handler(email);
+    });
+  }
+
+  _bindBackToLoginButton(handler) {
+    this.currentCard.addEventListener('click', (event) => {
       if (event.target.id !== 'backToLoginButton') return;
       event.target.blur();
       handler();
@@ -315,7 +405,7 @@ export class View {
   }
 
   _bindCreateAccountButton(handler) {
-    this.signupCard.addEventListener('click', (event) => {
+    this.currentCard.addEventListener('click', (event) => {
       if (event.target.id !== 'createAccountButton') return;
 
       event.target.blur();
@@ -346,7 +436,7 @@ export class View {
   }
 
   _bindSpeakButton(handler) {
-    this.clozeCard.addEventListener('click', (event) => {
+    this.currentCard.addEventListener('click', (event) => {
       if (event.target.id !== 'speakButton' && 
           !event.target.matches('#speakButton img')) return;
       
@@ -366,8 +456,8 @@ export class View {
     passwordField.parentElement.classList.remove('field-failure');
 
     // Display error message
-    this.loginCard.querySelector('.error-wrapper').style.visibility = 'visible';
-    this.loginCard.querySelector('.error').innerText = message;
+    this.currentCard.querySelector('.error').style.visibility = 'visible';
+    this.currentCard.querySelector('.error').innerText = message;
 
     // Change specified input fields to error state if specified
     if (highlightEmailField) {
@@ -389,7 +479,7 @@ export class View {
     passwordConfirmField.parentElement.classList.remove('field-failure');
 
     // Display error message
-    document.querySelector('.error-wrapper').style.visibility = 'visible';
+    document.querySelector('.error').style.visibility = 'visible';
     document.querySelector('.error').innerText = message;
 
     // Change specified input fields to error state if specified
@@ -402,7 +492,18 @@ export class View {
     }
   }
 
-  _makeField(type = 'text', labelText = '', id = '') {
+  raiseForgotPasswordError(message) {
+    const emailField = document.getElementById('emailField');
+
+    // Change email field to error state
+    emailField.parentElement.classList.add('field-failure');
+
+    // Display error message
+    document.querySelector('.error').style.visibility = 'visible';
+    document.querySelector('.error').innerText = message;
+  }
+
+  _makeField(type, labelText, id) {
     // Helper function to make input field
     // TODO: Object argument instead
 

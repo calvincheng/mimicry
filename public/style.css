@@ -12,13 +12,14 @@
 
 body {
   background: #221717; /*#160808*/
-  color: white;
+  color: #e2e1e1;
   font-family: 'Nunito Sans', sans-serif;
 }
 
 a {
   text-decoration: none;
   color: inherit;
+  cursor: pointer;
 }
 
 nav {
@@ -38,10 +39,6 @@ nav {
 
 nav ul {
   list-style: none;
-}
-
-nav a {
-  cursor: pointer;
 }
 
 .nav-logo {
@@ -71,6 +68,10 @@ nav a {
   border-radius: 16px;
 }
 
+.card p {
+  font-size: 0.75rem;
+}
+
 .card h2 {
   margin-bottom: 3rem;
 }
@@ -86,10 +87,9 @@ nav a {
   color: #e2e1e1;
 }
 
-.card .error-wrapper {
+.card .error {
   color: red;
   font-size: 0.75rem;
-  margin-bottom: 1.5rem;
 }
 
 /* Cloze -------------- */
@@ -100,7 +100,7 @@ nav a {
   width: 70vw;
 }
 
-.targetPhrase {
+.cloze .targetPhrase { /* quick fix, needed extra specificity to overide .card p*/
   font-weight: 600;
   font-size: 2.2rem;
   margin-top: 3rem;
@@ -120,9 +120,8 @@ nav a {
   color: #77e77c;
 }
 
-.targetWord
-
-.nativePhrase {
+.cloze .nativePhrase { /* quick fix, needed extra specificity to overide .card p*/
+  font-size: 1rem;
   color: #a7a2a2;
 }
 

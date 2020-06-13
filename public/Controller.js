@@ -3,35 +3,35 @@ export class Controller {
     this.model = model;
     this.view = view;
 
-    this.progress = 0; // new user
+    this.progress = 0; // TODO: Set to user.progress
     this.input = '';
-    // this.init();
+    this.init();
 
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        // User is signed in.
-        let displayName = user.displayName;
-        let email = user.email;
-        let emailVerified = user.emailVerified;
-        let photoURL = user.photoURL;
-        let uid = user.uid;
-        console.log('Signed in');
-
-        this.init();
-        
-      } else {
-        // User is signed out.
-        console.log('Signed out');
-
-        this.showLoginCard();
-
-      }
-    });
+//     firebase.auth().onAuthStateChanged((user) => {
+//       if (user) {
+//         // User is signed in.
+//         let displayName = user.displayName;
+//         let email = user.email;
+//         let emailVerified = user.emailVerified;
+//         let photoURL = user.photoURL;
+//         let uid = user.uid;
+//         console.log('Signed in');
+// 
+//         this.init();
+//         
+//       } else {
+//         // User is signed out.
+//         console.log('Signed out');
+// 
+//         this.showLoginCard();
+// 
+//       }
+//     });
   }
 
   init = async () => {
-    let card = await this.model.getCard(this.progress);
-    // let card = {fr: "{Salut} ! Tout le monde !", en: "{Hi}, everyone!"};
+    // let card = await this.model.getCard(this.progress);
+    let card = {fr: "{Salut} ! Tout le monde !", en: "{Hi}, everyone!"};
     this.showClozeCard(card);
   }
 
@@ -91,6 +91,28 @@ export class Controller {
       });
   }
 
+  recoverUserPassword = (email) => {
+    firebase.auth().sendPasswordResetEmail(email)
+      .then( () => this.showForgotPasswordSuccessCard() )
+      .catch((error) => {
+        let message;
+        switch (error.code) {
+          case 'auth/user-not-found':
+            message = 'No account registered under this email.'
+            this.view.raiseForgotPasswordError(message);
+            break;
+          case 'auth/invalid-email':
+            message = 'Please enter a valid email address.';
+            this.view.raiseForgotPasswordError(message);
+            break;
+          default:
+            this.view.raiseLoginError(error.message);
+        }
+        console.log(error.code);
+        console.log(error.message);
+      });
+  }
+
   logoutUser = () => {
     firebase.auth().signOut()
       .catch((error) => {
@@ -106,19 +128,34 @@ export class Controller {
     this.view.showLoginCard();
     this.view._bindLoginButton(this.loginUser);
     this.view._bindSignupButton(this.showSignupCard);
+    this.view._bindForgotPasswordLink(this.showForgotPasswordCard);
 
     this.deafen();
+  }
+
+  showForgotPasswordCard = () => {
+    this.view._clearWindow();
+    this.view.showForgotPasswordCard();
+    this.view._bindSendPasswordResetButton(this.recoverUserPassword);
+    this.view._bindBackToLoginButton(this.showLoginCard);
+  }
+
+  showForgotPasswordSuccessCard = () => {
+    this.view._clearWindow();
+    this.view.showForgotPasswordSuccessCard();
+    this.view._bindBackToLoginButton(this.showLoginCard);
   }
 
   showSignupCard = () => {
     this.view._clearWindow();
     this.view.showSignupCard();
-    this.view._bindBackButton(this.showLoginCard);
+    this.view._bindBackToLoginButton(this.showLoginCard);
     this.view._bindCreateAccountButton(this.signupUser);
   }
 
   showClozeCard = (card) => {
     this.view._clearWindow();
+
     this.view.nav.querySelector('#logoutButton').hidden = false;
     this.view._bindLogoutButton(this.logoutUser);
 
@@ -195,7 +232,7 @@ export class Controller {
       this.view._markCorrect();
       this.deafen();
 
-      this.progress += 1;
+      this.progress += 1; /* TODO: Set to user.progress */
 
       setTimeout(() => {
         this.init()
