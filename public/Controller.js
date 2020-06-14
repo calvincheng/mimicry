@@ -3,7 +3,8 @@ export class Controller {
     this.model = model;
     this.view = view;
 
-    this.progress = 0; // TODO: Set to user.progress
+    const uid = 1234;
+    this.progress = this.model.db.users[uid].progress;//0; // TODO: Set to user.progress
     this.input = '';
     this.init();
 
@@ -31,7 +32,7 @@ export class Controller {
 
   init = async () => {
     // let card = await this.model.getCard(this.progress);
-    let card = {fr: "{Salut} ! Tout le monde !", en: "{Hi}, everyone!"};
+    let card = await this.model.getCardOffline(this.progress);
     this.showClozeCard(card);
   }
 
@@ -218,6 +219,8 @@ export class Controller {
       this.input += event.key;
     } else if (event.key === 'Backspace') {
       event.preventDefault(); // Stop going to previous page
+
+      // string.normalize('NFD').replace(/[\u0300-\u036f]/g, ""); // Remove accents
 
       // Remove last character
       this.input = this.input.slice(0, -1);
