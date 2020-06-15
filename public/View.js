@@ -329,16 +329,14 @@ export class View {
     document.body.append(clozeCard);
   }
 
+
   _highlightWords(correctIdxs) {
     // Highlights correct words on cloze card
     const targetPhrase = document.querySelector('.targetPhrase');
     const targetSpans = targetPhrase.children;
 
-    // Remove previous styling
-    targetPhrase.classList.remove('complete');
-    for (let span of targetSpans) {
-      span.classList.remove('correct');
-    }
+    // Remove remaining highlights
+    this._removeHighlights();
 
     for (let i of correctIdxs) {
       const span = targetSpans[i];
@@ -346,8 +344,29 @@ export class View {
     }
   }
 
-  _markCorrect() {
-    document.querySelector('.targetPhrase').classList.add('complete');
+  _removeHighlights() {
+    const targetPhrase = document.querySelector('.targetPhrase');
+    const targetSpans = targetPhrase.children;
+
+    targetPhrase.classList.remove('complete');
+    targetPhrase.classList.remove('incomplete');
+
+    for (let span of targetSpans) {
+      span.classList.remove('correct');
+    }
+  }
+
+  _confirm(state) {
+    switch (state) {
+      case 'correct':
+        document.querySelector('.targetPhrase').classList.add('complete');
+        break;
+      case 'incorrect':
+        document.querySelector('.targetPhrase').classList.add('incomplete');
+        break;
+      default:
+        return;
+    }
   }
 
   _isBracketed(string) {

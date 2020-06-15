@@ -28,14 +28,13 @@ export class Model {
       decks: {
         1234: {
           owner: 1234,
-          cards: [
-//             {
-//               id: cardId,
+          cards: {
+//          cardId: {
 //               repetitions: 0,
 //               interval: 1, // in days
 //               easiness: 0,
-//             }
-          ],
+//          }
+          },
         }
       },
     }
@@ -52,13 +51,88 @@ export class Model {
   }
 
   signup(user) {
-    const data = {
+    // Create user data
+    const userData = {
       email: user.email,
       creationTime: new Date().toJSON(),
       progress: 0,
       deck: user.uid,
     };
-  firebase.database().ref('/users/' + user.uid).set(data);
+
+    // Add user to database
+    firebase.database().ref('/users/' + user.uid).set(userData);
+  }
+
+  addCardToUserDeck(cardId, deckId) {
+    const cardData = {
+      repetitions: 0,
+      interval: 1,
+      easiness: 0,
+    };
+
+    firebase.database().ref('/decks/' + deckId + '/cards/' + cardId).set(cardData);
+  }
+
+  addCardToUserDeckOffline(cardId, deckId) {
+    // If card already in deck, ignore
+    if (this.db.decks[deckId].cards[cardId]) return;
+
+    const cardData = {
+      repetitions: 0,
+      interval: 1,
+      ease: 0,
+      lastRevised: null,
+    };
+
+    this.db.decks[deckId].cards[cardId] = cardData;
+    console.log(this.db);
+  }
+
+  updateCardOffline(cardId, deckId, quality) {
+    const card = this.db.decks[deckId].cards[cardId];
+
+    if (quality < 0 || quality > 5) throw Error('Quality must be an integer between 0 and 5');
+
+    let newInterval,    // in days
+        newRepetitions, 
+        newEase; 
+
+    if (quality >= 3) {
+      // Correct response
+      if (card.repetitions === 0) {
+        newInterval = 1;
+      } else if (card.repetitions === 1) {
+        newInterval = 6;
+      } else {
+        newInterval = Math.ceil(card.interval * card.ease);
+      }
+      newRepetitions = card.repetitions + 1;
+      newEase = card.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    } else {
+      // Incorrect response
+      newRepetitions = 0
+      newInterval = 1;
+      newEase = card.ease;
+    }
+
+    if (newEase < 1.3) newEase = 1.3;
+
+    const now = new Date().toJSON();
+    
+    const newCard = {
+      repetitions: newRepetitions,
+      interval: newInterval,
+      ease: newEase,
+      lastRevised: now,
+    }
+
+    // Update database 
+    this.db.decks[deckId].cards[cardId] = newCard;
+  }
+
+  async getCard(cardId) {
+    const data = await firebase.database().ref('/cards/' + cardId).once('value');
+    return data.val();
   }
 
   async getCardOffline(cardId) {
@@ -66,8 +140,4 @@ export class Model {
     return data;
   }
 
-  async getCard(cardId) {
-    const data = await firebase.database().ref('/cards/' + cardId).once('value');
-    return data.val();
-  }
 }
