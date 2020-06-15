@@ -120,6 +120,10 @@ nav ul {
   color: #77e77c;
 }
 
+.incomplete span {
+  color: #f67444; /*#a33b3b;*/
+}
+
 .cloze .nativePhrase { /* quick fix, needed extra specificity to overide .card p*/
   font-size: 1rem;
   color: #a7a2a2;

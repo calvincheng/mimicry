@@ -5,8 +5,16 @@ export class Controller {
 
     const uid = 1234;
     this.progress = this.model.db.users[uid].progress;//0; // TODO: Set to user.progress
+
+    this.session = {
+      cardsCorrect: 0,
+      cardsIncorrect: 0,
+    }
+
+    this.inputTimeout = null;
     this.input = '';
-    this.init();
+
+    this.nextCard();
 
 //     firebase.auth().onAuthStateChanged((user) => {
 //       if (user) {
@@ -30,11 +38,6 @@ export class Controller {
 //     });
   }
 
-  init = async () => {
-    // let card = await this.model.getCard(this.progress);
-    let card = await this.model.getCardOffline(this.progress);
-    this.showClozeCard(card);
-  }
 
   signupUser = (email, password) => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -169,6 +172,25 @@ export class Controller {
     this.listen();
   }
 
+  nextCard = async () => {
+    // let card = await this.model.getCard(this.progress);
+    const cardId = this.progress;
+    const deckId = 1234;
+
+    // Reset some stats
+    this.quality = 5;
+    clearTimeout(this.inputTimeout);
+
+    this.model.addCardToUserDeckOffline(cardId, deckId); // ideally move method to model when model gets user due/new cards
+
+    let card = await this.model.getCardOffline(cardId);
+    this.showClozeCard(card);
+  }
+
+  updateCard = (cardId, deckId, quality) => {
+    
+  }
+
   listen() {
     document.addEventListener('keydown', this.readInput);
   }
@@ -176,12 +198,47 @@ export class Controller {
   deafen() {
     document.removeEventListener('keydown', this.readInput);
   }
+  
+  readInput = (event) => {
+    // Ensure input is valid (alphanumeric or backspace)
+    const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
+    if (!event.key.match(alphanum) && !event.key == 'Backspace') return;
+
+    if (event.key.match(alphanum)) {
+
+      this.input += event.key;
+
+    } else if (event.key === 'Backspace') {
+
+      event.preventDefault(); // Stop going to previous page
+
+      // Remove last character
+      this.input = this.input.slice(0, -1);
+
+      // Clear previous timeout and reset timeout for confirming input
+    }
+
+    // Check if input matches card
+    const result = this.checkInput();
+
+    // Update view
+    this.view._highlightWords(result.correctIdxs);
+
+//    console.log('cleared');
+    if (this.inputTimeout) clearTimeout(this.inputTimeout);
+    this.inputTimeout = setTimeout(this.confirmInput, 1500);
+
+    console.log(this.input);
+  }
 
   checkInput = () => {
     const removeBrackets = /[\{\}]/g;
 
     const inputWords = this.input.trim().split(' ');
-    const targetWords = this.currentCard.fr.replace(removeBrackets, '').split(' ');
+    let targetWords = this.currentCard.fr.replace(removeBrackets, '').split(' ');
+    
+    // Remove accents (TODO: hopefully remove when inputs can have accents)
+    targetWords = targetWords.map( word => this._removeAccents(word));
 
     let skip = 0; // For offsetting word comparison (i.e. skip = 1 --> input[2] vs target[3])
     let correct = true;
@@ -205,43 +262,41 @@ export class Controller {
       }
     }
 
-    const result = {correctIdxs: correctIdxs, correct: correct}
-
-    return result;
-
-  }
-
-  readInput = (event) => {
-    const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
-    if (!event.key.match(alphanum) && !event.key == 'Backspace') return;
-
-    if (event.key.match(alphanum)) {
-      this.input += event.key;
-    } else if (event.key === 'Backspace') {
-      event.preventDefault(); // Stop going to previous page
-
-      // string.normalize('NFD').replace(/[\u0300-\u036f]/g, ""); // Remove accents
-
-      // Remove last character
-      this.input = this.input.slice(0, -1);
+    const result = {
+      correctIdxs: correctIdxs, 
+      correct: correct
     }
 
-    // Check if input matches card
-    const result = this.checkInput();
+    return result;
+  }
 
-    // Update view
-    this.view._highlightWords(result.correctIdxs);
+  _removeAccents(string) {
+    return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+  }
+
+  confirmInput = () => {
+    const result = this.checkInput();
+    this.deafen();
+
     if (result.correct) { 
-      this.view._markCorrect();
-      this.deafen();
+      this.view._confirm('correct');
 
       this.progress += 1; /* TODO: Set to user.progress */
 
       setTimeout(() => {
-        this.init()
+        this.nextCard()
+      }, 1000);
+    } else {
+      this.view._confirm('incorrect')
+
+      if (this.quality === 5) this.quality = 3;
+
+      setTimeout(() => {
+        this.view._removeHighlights()
+        this.input = ''
+        this.listen();
       }, 1500);
     }
-    console.log(this.input);
   }
 
   speakPhrase = async (phrase) => {
