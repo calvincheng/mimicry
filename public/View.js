@@ -329,6 +329,12 @@ export class View {
     document.body.append(clozeCard);
   }
 
+  _isBracketed(string) {
+    // Returns true if {string} is bracketed
+    // const pattern = /(\{[^\]]*\})/; // g -- global flag
+    const pattern = /[\{\}]/;
+    return string.match(pattern);
+  }
 
   _highlightWords(correctIdxs) {
     // Highlights correct words on cloze card
@@ -369,11 +375,17 @@ export class View {
     }
   }
 
-  _isBracketed(string) {
-    // Returns true if {string} is bracketed
-    // const pattern = /(\{[^\]]*\})/; // g -- global flag
-    const pattern = /[\{\}]/;
-    return string.match(pattern);
+  showFinishedCard() {
+    const finishedCard = document.createElement('div');
+    finishedCard.className = 'card centered dp1';
+    finishedCard.style.textAlign = 'center';
+
+    const message = document.createElement('p');
+    message.innerText = 'All done!\n Thanks for trying out Mimicry.';
+    message.className = 'centered';
+    finishedCard.append(message)
+
+    document.body.append(finishedCard);
   }
 
   _bindLoginButton(handler) {

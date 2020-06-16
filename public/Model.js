@@ -34,6 +34,13 @@ export class Model {
 //               interval: 1, // in days
 //               easiness: 0,
 //          }
+//          0: {
+//            repetitions: 0,
+//            interval: 1,
+//            easiness: 0,
+//            lastRevised: null,
+//            due: "2020-06-15T10:48:11.180Z",
+//          },
           },
         }
       },
@@ -68,20 +75,20 @@ export class Model {
       repetitions: 0,
       interval: 1,
       easiness: 0,
+      lastRevised: null,
+      due: new Date().toJSON(), // now
     };
 
     firebase.database().ref('/decks/' + deckId + '/cards/' + cardId).set(cardData);
   }
 
   addCardToUserDeckOffline(cardId, deckId) {
-    // If card already in deck, ignore
-    if (this.db.decks[deckId].cards[cardId]) return;
-
     const cardData = {
       repetitions: 0,
       interval: 1,
       ease: 0,
       lastRevised: null,
+      due: new Date().toJSON(), // now
     };
 
     this.db.decks[deckId].cards[cardId] = cardData;
@@ -117,17 +124,32 @@ export class Model {
 
     if (newEase < 1.3) newEase = 1.3;
 
-    const now = new Date().toJSON();
+    const now = new Date();
     
     const newCard = {
       repetitions: newRepetitions,
       interval: newInterval,
       ease: newEase,
-      lastRevised: now,
+      lastRevised: now.toJSON(),
+      due: new Date(now.getTime() + (newInterval * 60 * 1000)).toJSON()
     }
 
     // Update database 
     this.db.decks[deckId].cards[cardId] = newCard;
+  }
+
+  async getDueCardIdsOffline(deckId) {
+    const deck = this.db.decks[deckId].cards;
+    console.log('deck', deck);
+    const now = new Date();
+
+    let dueCardIds = [];
+    for (let cardId in deck) {
+      console.log(deck[cardId]);
+      if (new Date(deck[cardId].due) <= now) dueCardIds.unshift(cardId);
+    }
+
+    return dueCardIds;
   }
 
   async getCard(cardId) {
