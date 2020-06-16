@@ -7,6 +7,9 @@ export class Controller {
     this.progress = this.model.db.users[uid].progress;//0; // TODO: Set to user.progress
 
     this.session = {
+      deckId: null,
+      cardId: null,
+      quality: 0,
       cardsCorrect: 0,
       cardsIncorrect: 0,
     }
@@ -14,7 +17,7 @@ export class Controller {
     this.inputTimeout = null;
     this.input = '';
 
-    this.nextCard();
+    this.init();
 
 //     firebase.auth().onAuthStateChanged((user) => {
 //       if (user) {
@@ -172,23 +175,44 @@ export class Controller {
     this.listen();
   }
 
-  nextCard = async () => {
-    // let card = await this.model.getCard(this.progress);
-    const cardId = this.progress;
-    const deckId = 1234;
+  showFinishedCard = () => {
+    this.view._clearWindow();
 
+    this.view.showFinishedCard(); 
+  }
+
+  init = async () => {
+    // Get cardId and deckId from firebase.auth() and firebase.database()
+    this.session.deckId = this.session.deckId || 1234;
+    this.dueCardIds = await this.model.getDueCardIdsOffline(this.session.deckId);
+    console.log('hi', this.dueCardIds);
+    this.nextCard();
+  }
+
+  nextCard = async () => {
     // Reset some stats
-    this.quality = 5;
+    this.session.quality = 5;
     clearTimeout(this.inputTimeout);
 
-    this.model.addCardToUserDeckOffline(cardId, deckId); // ideally move method to model when model gets user due/new cards
+    let cardId;
+    // Revise due cards if available, otherwise study new cards
+    if (this.dueCardIds.length > 0) {
+      cardId = this.dueCardIds.pop(); 
+    } else {
+      cardId = this.progress;
+      this.progress += 1;
 
-    let card = await this.model.getCardOffline(cardId);
-    this.showClozeCard(card);
+      this.model.addCardToUserDeckOffline(cardId, this.session.deckId); 
+    }
+
+    this.session.cardId = cardId;
+
+    const card = await this.model.getCardOffline(cardId);
+    card ? this.showClozeCard(card) : this.showFinishedCard();
   }
 
   updateCard = (cardId, deckId, quality) => {
-    
+    this.model.updateCardOffline(cardId, deckId, quality);
   }
 
   listen() {
@@ -224,7 +248,7 @@ export class Controller {
     // Update view
     this.view._highlightWords(result.correctIdxs);
 
-//    console.log('cleared');
+    // Reset confirm timeout
     if (this.inputTimeout) clearTimeout(this.inputTimeout);
     this.inputTimeout = setTimeout(this.confirmInput, 1500);
 
@@ -281,19 +305,24 @@ export class Controller {
     if (result.correct) { 
       this.view._confirm('correct');
 
-      this.progress += 1; /* TODO: Set to user.progress */
-
       setTimeout(() => {
+        // Set SM2 stats and show next card
+        this.model.updateCardOffline(
+          this.session.cardId, 
+          this.session.deckId, 
+          this.session.quality
+        );
+
         this.nextCard()
       }, 1000);
     } else {
       this.view._confirm('incorrect')
 
-      if (this.quality === 5) this.quality = 3;
+      if (this.session.quality === 5) this.session.quality = 2;
 
       setTimeout(() => {
-        this.view._removeHighlights()
-        this.input = ''
+        this.view._removeHighlights();
+        this.input = '';
         this.listen();
       }, 1500);
     }
