@@ -3,42 +3,52 @@ export class Controller {
     this.model = model;
     this.view = view;
 
-    const uid = 1234;
-    this.progress = this.model.db.users[uid].progress;//0; // TODO: Set to user.progress
+
+    this.user = {
+      displayName: null,
+      email: null,
+      uid: null
+    }
 
     this.session = {
       deckId: null,
       cardId: null,
       quality: 0,
-      cardsCorrect: 0,
-      cardsIncorrect: 0,
+//      cardsCorrect: 0,
+//      cardsIncorrect: 0,
     }
 
     this.inputTimeout = null;
     this.input = '';
 
-    this.init();
+//    this.initOffline();
 
-//     firebase.auth().onAuthStateChanged((user) => {
-//       if (user) {
-//         // User is signed in.
-//         let displayName = user.displayName;
-//         let email = user.email;
-//         let emailVerified = user.emailVerified;
-//         let photoURL = user.photoURL;
-//         let uid = user.uid;
-//         console.log('Signed in');
-// 
-//         this.init();
-//         
-//       } else {
-//         // User is signed out.
-//         console.log('Signed out');
-// 
-//         this.showLoginCard();
-// 
-//       }
-//     });
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        // User is signed in.
+
+        // Populate user data
+        this.user.displayName = user.displayName;
+        this.user.email = user.email;
+        this.user.emailVerified = user.emailVerified;
+        this.user.uid = user.uid;
+
+        let userData = await this.model.getUserData(user.uid);
+        this.progress = userData.progress;
+
+        console.log('Signed in');
+ 
+        // Start cloze cards
+        this.init();
+        
+      } else {
+        // User is signed out.
+        console.log('Signed out');
+ 
+        this.showLoginCard();
+ 
+      }
+    });
   }
 
 
@@ -182,10 +192,20 @@ export class Controller {
   }
 
   init = async () => {
-    // Get cardId and deckId from firebase.auth() and firebase.database()
-    this.session.deckId = this.session.deckId || 1234;
+    // Get deckId from firebase.auth() and firebase.database()
+    firebase.database().ref('/users/' + firebase.auth().currentUser.uid + '/deck')
+      .once('value')
+      .then(async (data) => {
+        this.session.deckId = data.val()
+        this.dueCardIds = await this.model.getDueCardIds(this.session.deckId);
+        this.nextCard();
+      });
+  }
+
+  initOffline = async () => {
+    this.session.deckId = 1234;
     this.dueCardIds = await this.model.getDueCardIdsOffline(this.session.deckId);
-    console.log('hi', this.dueCardIds);
+    console.log(this.dueCardIds);
     this.nextCard();
   }
 
@@ -195,24 +215,32 @@ export class Controller {
     clearTimeout(this.inputTimeout);
 
     let cardId;
+    let isNewCard = false;
     // Revise due cards if available, otherwise study new cards
     if (this.dueCardIds.length > 0) {
       cardId = this.dueCardIds.pop(); 
     } else {
       cardId = this.progress;
-      this.progress += 1;
-
-      this.model.addCardToUserDeckOffline(cardId, this.session.deckId); 
+      isNewCard = true;
     }
-
     this.session.cardId = cardId;
 
     const card = await this.model.getCardOffline(cardId);
+
+    // Add card information to user deck if it's new and it exists
+    if (card && isNewCard) {
+      this.progress += 1;
+      this.model.updateUserProgress(this.user.uid, this.progress);
+      this.model.addCardToUserDeck(cardId, this.session.deckId); 
+    }
+
+    // console.log('progress: ', this.progress);
+
     card ? this.showClozeCard(card) : this.showFinishedCard();
   }
 
   updateCard = (cardId, deckId, quality) => {
-    this.model.updateCardOffline(cardId, deckId, quality);
+    this.model.updateCard(cardId, deckId, quality);
   }
 
   listen() {
@@ -250,7 +278,7 @@ export class Controller {
 
     // Reset confirm timeout
     if (this.inputTimeout) clearTimeout(this.inputTimeout);
-    this.inputTimeout = setTimeout(this.confirmInput, 1500);
+    this.inputTimeout = setTimeout(this.confirmInput, 1000);
 
     console.log(this.input);
   }
@@ -307,7 +335,7 @@ export class Controller {
 
       setTimeout(() => {
         // Set SM2 stats and show next card
-        this.model.updateCardOffline(
+        this.model.updateCard(
           this.session.cardId, 
           this.session.deckId, 
           this.session.quality

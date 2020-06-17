@@ -1,8 +1,9 @@
 export class Model {
   constructor() {
+
     this.db = {
       users: {
-        1234: {
+        hTfly2BvucRuD1AdGV6HNH73bnC3: {
           name: "Calvin Cheng",
           email: "calvin.cc.cheng@gmail.com",
           progress: 0, // 4th word
@@ -26,8 +27,8 @@ export class Model {
       },
 
       decks: {
-        1234: {
-          owner: 1234,
+        hTfly2BvucRuD1AdGV6HNH73bnC3: {
+          owner: "hTfly2BvucRuD1AdGV6HNH73bnC3",
           cards: {
 //          cardId: {
 //               repetitions: 0,
@@ -51,14 +52,18 @@ export class Model {
     }
   }
 
-  login(user) {
+  async getUserData(uid) {
     // Gets user information for app
-    firebase.database().ref('/users/' + user.uid).once('value')
-      .then( (snapshot) => this.data = snapshot.val() );
+    const userData = await firebase.database().ref('/users/' + uid).once('value');
+    return userData.val();
+  }
+
+  updateUserProgress(uid, progress) {
+    firebase.database().ref('/users/' + uid + '/progress').set(progress);
   }
 
   signup(user) {
-    // Create user data
+    // Add user to database
     const userData = {
       email: user.email,
       creationTime: new Date().toJSON(),
@@ -66,37 +71,33 @@ export class Model {
       deck: user.uid,
     };
 
-    // Add user to database
     firebase.database().ref('/users/' + user.uid).set(userData);
+
+    // Add user deck to database
+    const deckData = {
+      owner: user.uid,
+    }
+    firebase.database().ref('/decks/' + user.uid).set(deckData);
   }
 
   addCardToUserDeck(cardId, deckId) {
     const cardData = {
-      repetitions: 0,
-      interval: 1,
-      easiness: 0,
-      lastRevised: null,
-      due: new Date().toJSON(), // now
-    };
-
-    firebase.database().ref('/decks/' + deckId + '/cards/' + cardId).set(cardData);
-  }
-
-  addCardToUserDeckOffline(cardId, deckId) {
-    const cardData = {
+      totalAttempts: 0,
       repetitions: 0,
       interval: 1,
       ease: 0,
       lastRevised: null,
       due: new Date().toJSON(), // now
     };
-
-    this.db.decks[deckId].cards[cardId] = cardData;
-    console.log(this.db);
+    firebase.database().ref('/decks/' + deckId + '/cards/' + cardId).set(cardData);
+    // this.db.decks[deckId].cards[cardId] = cardData;
   }
 
-  updateCardOffline(cardId, deckId, quality) {
-    const card = this.db.decks[deckId].cards[cardId];
+  async updateCard(cardId, deckId, quality) {
+    // SuperMemo 2 (SM2) Algorithm
+    // const card = this.db.decks[deckId].cards[cardId];
+    const cardData = await firebase.database().ref('/decks/'+deckId+'/cards/'+cardId).once('value');
+    const card = cardData.val();
 
     if (quality < 0 || quality > 5) throw Error('Quality must be an integer between 0 and 5');
 
@@ -114,7 +115,7 @@ export class Model {
         newInterval = Math.ceil(card.interval * card.ease);
       }
       newRepetitions = card.repetitions + 1;
-      newEase = card.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+      newEase = (card.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))).toFixed(3);
     } else {
       // Incorrect response
       newRepetitions = 0
@@ -127,25 +128,28 @@ export class Model {
     const now = new Date();
     
     const newCard = {
+      totalAttempts: card.totalAttempts + 1,
       repetitions: newRepetitions,
       interval: newInterval,
       ease: newEase,
       lastRevised: now.toJSON(),
-      due: new Date(now.getTime() + (newInterval * 60 * 1000)).toJSON()
+      due: new Date(now.getTime() + (newInterval * 60 * 1000)).toJSON() // TODO: CHANGE TO DAYS
     }
 
     // Update database 
-    this.db.decks[deckId].cards[cardId] = newCard;
+    // this.db.decks[deckId].cards[cardId] = newCard;
+    firebase.database().ref('/decks/'+deckId+'/cards/'+cardId).set(newCard);
   }
 
-  async getDueCardIdsOffline(deckId) {
-    const deck = this.db.decks[deckId].cards;
-    console.log('deck', deck);
+//  async getDueCardIdsOffline(deckId) {
+  async getDueCardIds(deckId) {
+//    const deck = this.db.decks[deckId].cards;
+    const deckData = await firebase.database().ref('/decks/'+deckId+'/cards').once('value');
+    const deck = deckData.val();
     const now = new Date();
 
     let dueCardIds = [];
     for (let cardId in deck) {
-      console.log(deck[cardId]);
       if (new Date(deck[cardId].due) <= now) dueCardIds.unshift(cardId);
     }
 
