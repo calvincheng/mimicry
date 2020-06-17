@@ -112,7 +112,7 @@ export class Model {
         newInterval = Math.ceil(card.interval * card.ease);
       }
       newRepetitions = card.repetitions + 1;
-      newEase = (card.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))).toFixed(3);
+      newEase = +(card.ease + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))).toFixed(3);
     } else {
       // Incorrect response
       newRepetitions = 0
