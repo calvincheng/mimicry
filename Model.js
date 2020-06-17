@@ -124,13 +124,14 @@ export class Model {
 
     const now = new Date();
     
+    const HOURS_TO_MILLISECONDS = 1000 * 60 * 60;
     const newCard = {
       totalAttempts: card.totalAttempts + 1,
       repetitions: newRepetitions,
       interval: newInterval,
       ease: newEase,
       lastRevised: now.toJSON(),
-      due: new Date(now.getTime() + (newInterval * 60 * 1000)).toJSON() // TODO: CHANGE TO DAYS
+      due: new Date(now.getTime() + (newInterval * HOURS_TO_MILLISECONDS)).toJSON() // TODO: CHANGE TO DAYS
     }
 
     // Update database 
