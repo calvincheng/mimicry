@@ -1,11 +1,12 @@
 export class Model {
   constructor() {
 
+    // Sample data
     this.db = {
       users: {
         hTfly2BvucRuD1AdGV6HNH73bnC3: {
           name: "Calvin Cheng",
-          email: "calvin.cc.cheng@gmail.com",
+          email: "email@gmail.com",
           progress: 0, // 4th word
           deck: 1234,
         },
@@ -45,10 +46,6 @@ export class Model {
           },
         }
       },
-    }
-
-    this.session = {
-      user: null,
     }
   }
 
