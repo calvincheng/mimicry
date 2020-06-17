@@ -381,7 +381,7 @@ export class View {
     finishedCard.style.textAlign = 'center';
 
     const message = document.createElement('p');
-    message.innerText = 'All done!\n Thanks for trying out Mimicry.';
+    message.innerText = 'All done for now! Check back later for due cards.';
     message.className = 'centered';
     finishedCard.append(message)
 
