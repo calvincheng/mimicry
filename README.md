@@ -9,13 +9,11 @@
 </h4>
 
 
-<p>
+
+<p align="center">
   <img src="./media/demo.gif" width="90%" />
 </p>
 
-
-
----
 
 
 <h2 id="overview">Overview</h2>
