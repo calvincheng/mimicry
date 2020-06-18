@@ -227,7 +227,7 @@ export class Controller {
     }
     this.session.cardId = cardId;
 
-    const card = await this.model.getCardOffline(cardId);
+    const card = await this.model.getCard(cardId);
 
     // Add card information to user deck if it's new and it exists
     if (card && isNewCard) {
