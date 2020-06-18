@@ -39,6 +39,9 @@ export class Controller {
         this.progress = userData.progress;
 
         console.log('Signed in');
+
+        this.view.nav.querySelector('#logoutButton').hidden = false;
+        this.view._bindLogoutButton(this.logoutUser);
  
         // Start cloze cards
         this.init();
@@ -47,6 +50,8 @@ export class Controller {
         // User is signed out.
         console.log('Signed out');
  
+        this.view.nav.querySelector('#logoutButton').hidden = true;
+
         this.showLoginCard();
  
       }
@@ -142,7 +147,6 @@ export class Controller {
 
   showLoginCard = () => {
     this.view._clearWindow();
-    this.view.nav.querySelector('#logoutButton').hidden = true;
 
     this.view.showLoginCard();
     this.view._bindLoginButton(this.loginUser);
@@ -175,9 +179,6 @@ export class Controller {
   showClozeCard = (card) => {
     this.view._clearWindow();
 
-    this.view.nav.querySelector('#logoutButton').hidden = false;
-    this.view._bindLogoutButton(this.logoutUser);
-
     this.currentCard = card;
 
     this.view.showClozeCard(card);
@@ -190,7 +191,6 @@ export class Controller {
 
   showFinishedCard = () => {
     this.view._clearWindow();
-
     this.view.showFinishedCard(); 
   }
 
