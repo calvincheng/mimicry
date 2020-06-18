@@ -1,18 +1,21 @@
-<img src="./media/logo.png" alt="logo" style="float: center; width: 33%; min-width: 120px;" />
+<p align="center">
+	<img src="./media/logo.png" alt="logo" width="33%"/>
+</p>
 
----
+<h3 align="center">Language learning with voice controlled cloze cards (WIP)</h3>
 
-<h3 style="text-align: center;">Language learning with voice controlled cloze cards (WIP)</h3>
-
-<h4 style="text-align: center; padding: 1rem;">
+<h4 align="center">
 <a href="#overview">Overview</a> • <a href="#demo">Demo</a> • <a href="#built-with">Built With</a> • <a href="#todos">Todos</a>
 </h4>
 
-<video style="width: 100%;" autplay muted loop playsinline>
-	<source src="./media/demo.mp4" type="video/mp4">
-</video>
+
+<p>
+  <img src="./media/demo.gif" width="90%" />
+</p>
 
 
+
+---
 
 
 <h2 id="overview">Overview</h2>
