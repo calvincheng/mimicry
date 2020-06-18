@@ -478,6 +478,17 @@ export class View {
     });
   }
 
+  _bindMicrophoneButton(handler) {
+    this.currentCard.addEventListener('click', (event) => {
+      if (event.target.id !== 'microphoneButton' &&
+          !event.target.matches('#microphoneButton img')) return;
+
+      event.target.closest('.button').blur();
+      
+      handler();
+    });
+  }
+
   raiseLoginError(message, highlightEmailField, highlightPasswordField) {
     const emailField = document.getElementById('emailField');
     const passwordField = document.getElementById('passwordField');
