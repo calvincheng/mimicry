@@ -341,7 +341,7 @@ export class Controller {
       const inputWord = inputWords[i-skip] ? inputWords[i-skip].replace(removePunc, '') : null;
       const targetWord = targetWords[i].replace(removePunc, '');
       
-      const checkPunc = /[\!\«\»]/;
+      const checkPunc = /[\!\?\«\»]/;
       if (targetWord.match(checkPunc) && correctIdxs.includes(i - 1)) {
         // Target is a special punctuation mark following a correct word
         correctIdxs.push(i);
