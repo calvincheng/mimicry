@@ -21,6 +21,8 @@ export class Controller {
     this.inputTimeout = null;
     this.input = '';
 
+    this.initSpeechRecognition();
+
 //    this.initOffline();
 
     firebase.auth().onAuthStateChanged(async (user) => {
@@ -179,10 +181,11 @@ export class Controller {
     this.currentCard = card;
 
     this.view.showClozeCard(card);
+    this.view._bindMicrophoneButton(this.startSpeechRecognition);
     this.view._bindSpeakButton(this.speakPhrase);
 
     this.input = '';
-    this.listen();
+    // this.listen();
   }
 
   showFinishedCard = () => {
@@ -212,7 +215,6 @@ export class Controller {
   nextCard = async () => {
     // Reset some stats
     this.session.quality = 5;
-    clearTimeout(this.inputTimeout);
 
     let cardId;
     let isNewCard = false;
@@ -234,8 +236,6 @@ export class Controller {
       this.model.addCardToUserDeck(cardId, this.session.deckId); 
     }
 
-    // console.log('progress: ', this.progress);
-
     card ? this.showClozeCard(card) : this.showFinishedCard();
   }
 
@@ -243,15 +243,58 @@ export class Controller {
     this.model.updateCard(cardId, deckId, quality);
   }
 
+  initSpeechRecognition() {
+    if ('webkitSpeechRecognition' in window) {
+      let speechRecognition = webkitSpeechRecognition;
+      this.recognition = new speechRecognition();
+      this.recognition.continuous = false; // false: ends when speaking stops
+      this.recognition.interimResults = true;
+      this.recognition.lang = 'fr-FR';
+
+      this.recognition.onstart = () => {
+        console.log('Speech recognition: ON');
+        this.input = '';
+      };
+
+      this.recognition.onresult = (event) => {
+        this.input = event.results[0][0].transcript;
+        console.log(this.input);
+
+        const result = this.checkInput();
+        this.view._highlightWords(result.correctIdxs);
+      }
+
+      this.recognition.onspeechend = (event) => {
+        console.log('Speech recognition: OFF');
+        this.recognition.stop();
+      };
+
+      this.recognition.onend = (event) => {
+        console.log('FINAL INPUT:', this.input);
+        this.confirmInput();
+      }
+    } else {
+      console.log('Mimicry not supported on this browser. Please use Google Chrome instead.');
+    }
+  }
+
+  startSpeechRecognition = () => {
+    this.recognition.start();
+  }
+
   listen() {
+    // Listen for keyboard input -- FOR TESTING
     document.addEventListener('keydown', this.readInput);
   }
 
   deafen() {
+    // Stop listening for keyboard input -- FOR TESTING
     document.removeEventListener('keydown', this.readInput);
   }
   
   readInput = (event) => {
+    // Used for keyboard input -- FOR TESTING
+
     // Ensure input is valid (alphanumeric or backspace)
     const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
     if (!event.key.match(alphanum) && !event.key == 'Backspace') return;
@@ -266,8 +309,6 @@ export class Controller {
 
       // Remove last character
       this.input = this.input.slice(0, -1);
-
-      // Clear previous timeout and reset timeout for confirming input
     }
 
     // Check if input matches card
@@ -289,8 +330,8 @@ export class Controller {
     const inputWords = this.input.trim().split(' ');
     let targetWords = this.currentCard.fr.replace(removeBrackets, '').split(' ');
     
-    // Remove accents (TODO: hopefully remove when inputs can have accents)
-    targetWords = targetWords.map( word => this._removeAccents(word));
+//     // Remove accents (TODO: hopefully remove when inputs can have accents)
+//     targetWords = targetWords.map( word => this._removeAccents(word));
 
     let skip = 0; // For offsetting word comparison (i.e. skip = 1 --> input[2] vs target[3])
     let correct = true;
@@ -301,15 +342,15 @@ export class Controller {
       const targetWord = targetWords[i].replace(removePunc, '');
       
       const checkPunc = /[\!\«\»]/;
-      
-      // If input matches target, OR 
-      // target is a special punctuation mark following a correct word
       if (targetWord.match(checkPunc) && correctIdxs.includes(i - 1)) {
+        // Target is a special punctuation mark following a correct word
         correctIdxs.push(i);
         skip += 1;
       } else if (inputWord && inputWord.toLowerCase() === targetWord.toLowerCase()) {
+        // Input matches target
         correctIdxs.push(i);
       } else {
+        // Incorrect word
         correct = false;
       }
     }
@@ -328,7 +369,7 @@ export class Controller {
 
   confirmInput = () => {
     const result = this.checkInput();
-    this.deafen();
+//    this.deafen();
 
     if (result.correct) { 
       this.view._confirm('correct');
@@ -351,7 +392,7 @@ export class Controller {
       setTimeout(() => {
         this.view._removeHighlights();
         this.input = '';
-        this.listen();
+        // this.listen();
       }, 1500);
     }
   }
@@ -361,20 +402,20 @@ export class Controller {
     utterance.lang = 'fr-FR';
 
     if (speechSynthesis.getVoices().length > 0) {
-      // 3: Amelie fr-CA, 37: Thomas fr-FR, 53: Google français fr-FR
+      // Speech synthesis is ready (i.e. voices loaded)
+
+      // [3]: Amelie fr-CA, [37]: Thomas fr-FR, [53]: Google français fr-FR
       utterance.voice = speechSynthesis.getVoices()[53]; 
       speechSynthesis.speak(utterance);
 
       // Clear utterance queue after speaking in case of spammed button
       utterance.onend = () => { speechSynthesis.cancel() };
     } else {
-      // If voices haven't loaded yet, add event listener to 
-      // call speakPhrase again when ready
+      // Add event listener to call speakPhrase again when ready
       console.log('Waiting for voices to populate');
       speechSynthesis.addEventListener('voiceschanged', (event) => {
         this.speakPhrase(phrase);
       });
     }
   }
-
 }
