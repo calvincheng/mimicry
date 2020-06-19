@@ -257,7 +257,10 @@ export class Controller {
       };
 
       this.recognition.onresult = (event) => {
-        this.input = event.results[0][0].transcript;
+        console.log(event.results[0][0].confidence);
+        if (event.results[0][0].confidence >= 0.6) {
+          this.input = event.results[0][0].transcript;
+        }
         console.log(this.input);
 
         const result = this.checkInput();
