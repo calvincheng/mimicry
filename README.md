@@ -5,7 +5,7 @@
 <h3 align="center">Language learning with voice controlled cloze cards (WIP)</h3>
 
 <h4 align="center">
-<a href="#overview">Overview</a> • <a href="#demo">Demo</a> • <a href="#built-with">Built With</a> • <a href="#todos">Todos</a>
+<a href="#overview">Overview</a> • <a href="#demo">Demo</a> • <a href="#built-with">Built With</a> • <a href="#todos">Todos</a> • <a href="#bugs">Bugs</a> • <a href="#goals">Goals</a> 
 </h4>
 
 
@@ -42,10 +42,26 @@ _Work in progress_
 
 <h2 id="todos">Todos</h2>
 
+* Add (!) logo in error messages for accessibility for the colour-blind
 * Email verification
 * Add more cards
+* Add loading screen
 * More intuitive user recording
-* Cloze inputs
-* User profile actions
+* Add cloze deletion
+* User profile menu
 * List of seen cards
-* Replace WebSpeech with Google Cloud Speech-To-Text (if $$$ allows)
+
+
+
+<h2 id="bugs">Bugs</h2>
+
+* Multi-word cloze (e.g. {s'il vous plaît}) not detected properly
+* Punctuation following bracketed words are highlighted (e.g. {please}.  highlights the "." as well)
+
+
+
+<h2 id="goals">Goals</h2>
+
+* Replace WebSpeech API with Google Cloud Speech-To-Text API
+
+
