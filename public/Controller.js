@@ -271,6 +271,8 @@ export class Controller {
 
       this.recognition.onend = (event) => {
         console.log('FINAL INPUT:', this.input);
+        this.view.currentCard.querySelector('#listeningMessage')
+          .style.visibility = 'hidden';
         this.confirmInput();
       }
     } else {
@@ -279,6 +281,8 @@ export class Controller {
   }
 
   startSpeechRecognition = () => {
+    this.view.currentCard.querySelector('#listeningMessage')
+      .style.visibility = 'visible';
     this.recognition.start();
   }
 

@@ -318,7 +318,15 @@ export class View {
     speakIcon.style.width = 20 + 'px';
     speakButton.append(speakIcon);
 
-    buttons.append(microphoneButton, speakButton);
+    // Listening message
+    const listeningMessage = document.createElement('p');
+    listeningMessage.id = 'listeningMessage';
+    listeningMessage.innerText = 'Listening...';
+    listeningMessage.style.display = 'inline-block';
+    listeningMessage.style.marginRight = 0.3 + 'rem';
+    listeningMessage.style.visibility = 'hidden';
+
+    buttons.append(listeningMessage, microphoneButton, speakButton);
 
     bottomWrapper.append(nativePhrase, buttons);
 
