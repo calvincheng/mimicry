@@ -1,7 +1,6 @@
 export class View {
   constructor() {
     this.showNavbar();
-    this.showLoginCard();
   }
 
   showNavbar() {
