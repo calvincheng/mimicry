@@ -112,6 +112,18 @@ nav ul {
   transition: color 0.2s;
 }
 
+.clozeWord {
+  color: #2d2323;
+  box-shadow: /* Underline */
+    inset 0 -0.1rem #2d2323,
+    inset 0 -0.3rem #766f6f;
+  user-select: none;
+}
+
+.spoken {
+  color: #766f6f;
+}
+
 .correct {
   color: #e2e1e1;
 }

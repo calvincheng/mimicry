@@ -235,7 +235,10 @@ export class View {
   }
 
   showClozeCard(card) {
-    // card = {fr: '{Tapez} moi sur votre clavier !', en: '{Type} me on your keyboard!'}
+    // card = {
+    //   fr: '{Tapez} moi sur votre clavier !', 
+    //   en: '{Type} me on your keyboard!'
+    // }
 
     const clozeCard = document.createElement('div');
     clozeCard.className = 'card cloze centered dp1';
@@ -247,13 +250,16 @@ export class View {
 
     // Populate targetPhrase element
     for (let word of card.fr.split(' ')) {
-      if (this._isBracketed(word)) {
-        // Cloze word
-        word = word.replace(/[\{\}]/g, '');
-      }
-
       let span = document.createElement('span');
+
+      if (this._isBracketed(word)) {
+        span.className = 'clozeWord',
+        word = word.replace(/[\{\}]/g, '');
+        this.clozeWord = word;//.replace(/[\,\.]/g, '');
+      } 
+
       span.innerText = word;
+
       targetPhrase.append(span);
 
       // Add space between words
@@ -336,6 +342,23 @@ export class View {
     document.body.append(clozeCard);
   }
 
+  showCloze(word, capitalise) {
+    const clozeWord = document.querySelector('.clozeWord');
+    if (capitalise) {
+      word = word.charAt(0).toUpperCase() + word.slice(1);
+    }
+    clozeWord.classList.add('spoken');
+    clozeWord.innerText = word;
+  }
+
+  hideCloze() {
+    const clozeWord = document.querySelector('.clozeWord');
+    clozeWord.classList.remove('spoken');
+
+    // Wait for CSS transition to finish before replacing inner text
+    setTimeout( () => {clozeWord.innerText = this.clozeWord;}, 200);
+  }
+
   _isBracketed(string) {
     // Returns true if {string} is bracketed
     // const pattern = /(\{[^\]]*\})/; // g -- global flag
@@ -355,6 +378,7 @@ export class View {
       const span = targetSpans[i];
       span.classList.add('correct');
     }
+
   }
 
   _removeHighlights() {

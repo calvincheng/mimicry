@@ -260,11 +260,11 @@ export class Controller {
         console.log(event.results[0][0].confidence);
         if (event.results[0][0].confidence >= 0.6) {
           this.input = event.results[0][0].transcript;
+          this.insertClozeWord();
+          const result = this.checkInput();
+          this.view._highlightWords(result.correctIdxs);
         }
         console.log(this.input);
-
-        const result = this.checkInput();
-        this.view._highlightWords(result.correctIdxs);
       }
 
       this.recognition.onspeechend = (event) => {
@@ -276,7 +276,8 @@ export class Controller {
         console.log('FINAL INPUT:', this.input);
         this.view.currentCard.querySelector('#listeningMessage')
           .style.visibility = 'hidden';
-        this.confirmInput();
+        setTimeout(this.confirmInput, 400);
+//        this.confirmInput();
       }
     } else {
       console.log('Mimicry not supported on this browser. Please use Google Chrome instead.');
@@ -331,15 +332,35 @@ export class Controller {
     console.log(this.input);
   }
 
+  insertClozeWord = () => {
+    const targetWords = this.currentCard.fr.split(' ');
+    const inputWords = this.input.trim().split(' ');
+
+    // Find index of cloze word in targetPhrase
+    let index;
+    for (let i = 0; i < targetWords.length; i++) {
+      const word = targetWords[i];
+      if (word.includes('{')) {
+        index = i;
+        break;
+      }
+    }
+
+    // Return if input doesn't have enough words to match cloze
+    if (index >= inputWords.length) return;
+
+    // Mark the index-th word in input as cloze word
+    const clozeWord = inputWords[index];
+    const capitalise = index === 0;
+    this.view.showCloze(clozeWord, capitalise);
+  }
+
   checkInput = () => {
     const removeBrackets = /[\{\}]/g;
 
     const inputWords = this.input.trim().split(' ');
     let targetWords = this.currentCard.fr.replace(removeBrackets, '').split(' ');
     
-//     // Remove accents (TODO: hopefully remove when inputs can have accents)
-//     targetWords = targetWords.map( word => this._removeAccents(word));
-
     let skip = 0; // For offsetting word comparison (i.e. skip = 1 --> input[2] vs target[3])
     let correct = true;
     let correctIdxs = [];
@@ -349,9 +370,9 @@ export class Controller {
       const targetWord = targetWords[i].replace(removePunc, '');
       
       const checkPunc = /[\!\?\«\»]/;
-      if (targetWord.match(checkPunc) && correctIdxs.includes(i - 1)) {
+      if (targetWord.match(checkPunc)) {
         // Target is a special punctuation mark following a correct word
-        correctIdxs.push(i);
+        if (correctIdxs.includes(i - 1)) correctIdxs.push(i);
         skip += 1;
       } else if (inputWord && inputWord.toLowerCase() === targetWord.toLowerCase()) {
         // Input matches target
@@ -364,7 +385,7 @@ export class Controller {
 
     const result = {
       correctIdxs: correctIdxs, 
-      correct: correct
+      correct: correct,
     }
 
     return result;
@@ -397,6 +418,7 @@ export class Controller {
       if (this.session.quality === 5) this.session.quality = 2;
 
       setTimeout(() => {
+        this.view.hideCloze();
         this.view._removeHighlights();
         this.input = '';
         // this.listen();
