@@ -47,15 +47,16 @@ _Work in progress_
 * Add more cards
 * Add loading screen
 * More intuitive user recording
-* Add cloze deletion
+* ~~Add cloze deletion~~
 * User profile menu
 * List of seen cards
+* Next/previous card
 
 
 
 <h2 id="bugs">Bugs</h2>
 
-* Multi-word cloze (e.g. {s'il vous plaît}) not detected properly
+* ~~Multi-word cloze (e.g. {s'il vous plaît}) not detected properly~~ (Limiting scope to single words)
 * Punctuation following bracketed words are highlighted (e.g. {please}.  highlights the "." as well)
 
 
@@ -63,5 +64,6 @@ _Work in progress_
 <h2 id="goals">Goals</h2>
 
 * Replace WebSpeech API with Google Cloud Speech-To-Text API
+* Other languages
 
 
