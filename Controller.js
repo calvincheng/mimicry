@@ -153,7 +153,8 @@ export class Controller {
     this.view._bindSignupButton(this.showSignupCard);
     this.view._bindForgotPasswordLink(this.showForgotPasswordCard);
 
-    this.deafen();
+//    this.deafen();
+    this.removeSpacebarShortcut();
   }
 
   showForgotPasswordCard = () => {
@@ -186,6 +187,7 @@ export class Controller {
     this.view._bindSpeakButton(this.speakPhrase);
 
     this.input = '';
+    this.addSpacebarShortcut();
     // this.listen();
   }
 
@@ -257,6 +259,7 @@ export class Controller {
 
       this.recognition.onstart = () => {
         console.log('Speech recognition: ON');
+        this.view.toggleRecordingAnimation();
         this.input = '';
       };
 
@@ -291,8 +294,21 @@ export class Controller {
   }
 
   startSpeechRecognition = () => {
-    this.view.toggleRecordingAnimation();
     this.recognition.start();
+  }
+
+  addSpacebarShortcut() {
+    document.addEventListener('keydown', this.readSpacebar);
+  }
+
+  removeSpacebarShortcut() {
+    document.removeEventListener('keydown', this.readSpacebar);
+  }
+
+  readSpacebar = (event) => {
+    if (event.code !== 'Space') return;
+    console.log(this);
+    this.startSpeechRecognition();
   }
 
   listen() {
@@ -403,6 +419,7 @@ export class Controller {
   confirmInput = () => {
     const result = this.checkInput();
 //    this.deafen();
+    this.removeSpacebarShortcut();
 
     if (result.correct) { 
       this.view._confirm('correct');
@@ -426,6 +443,7 @@ export class Controller {
         this.view.hideCloze();
         this.view._removeHighlights();
         this.input = '';
+        this.addSpacebarShortcut();
         // this.listen();
       }, 1500);
     }
