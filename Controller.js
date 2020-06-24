@@ -189,9 +189,9 @@ export class Controller {
     // this.listen();
   }
 
-  showFinishedCard = () => {
+  showMessageCard = (msg) => {
     this.view._clearWindow();
-    this.view.showFinishedCard(); 
+    this.view.showMessageCard(msg); 
   }
 
   init = async () => {
@@ -236,7 +236,8 @@ export class Controller {
       this.model.addCardToUserDeck(cardId, this.session.deckId); 
     }
 
-    card ? this.showClozeCard(card) : this.showFinishedCard();
+    const finishedMsg = 'All done for now!\nCheck again later for more due cards.';
+    card ? this.showClozeCard(card) : this.showMessageCard(finishedMsg);
   }
 
   updateCard = (cardId, deckId, quality) => {

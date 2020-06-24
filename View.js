@@ -398,17 +398,19 @@ export class View {
     }
   }
 
-  showFinishedCard() {
-    const finishedCard = document.createElement('div');
-    finishedCard.className = 'card centered dp1';
-    finishedCard.style.textAlign = 'center';
+  showMessageCard(msg) {
+    const messageCard = document.createElement('div');
+    messageCard.className = 'card centered dp1';
+    messageCard.style.textAlign = 'center';
 
     const message = document.createElement('p');
-    message.innerText = 'All done for now!\nCheck back later for due cards.';
+    message.innerText = msg;
+    message.style.width = 350 + 'px';
     message.className = 'centered';
-    finishedCard.append(message)
 
-    document.body.append(finishedCard);
+    messageCard.append(message)
+
+    document.body.append(messageCard);
   }
 
   _bindLoginButton(handler) {
