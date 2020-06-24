@@ -8,9 +8,9 @@ export class View {
     const nav = document.createElement('nav');
 
     // Create logo and add to nav
-    const logo = document.createElement('img');
+    const logo = document.createElement('span');
     logo.className = 'nav-logo';
-    logo.src = './assets/svg/logo_dark.svg';
+    logo.innerText = 'MIMICRY';
 
     // Create nav links
     const navLinks = document.createElement('ul');
