@@ -266,14 +266,7 @@ export class View {
       targetPhrase.insertAdjacentHTML('beforeend', ' ');
     }
 
-    // Add nativePhrase and buttons to bottom wrapper
-    const bottomWrapper = document.createElement('div');
-
-    // Apply basic styles to wrapper
-    bottomWrapper.style.display = 'flex';
-    bottomWrapper.style.justifyContent = 'space-between';
-    bottomWrapper.style.alignItems = 'flex-end';
-
+    // Create nativePhrase element
     const nativePhrase = document.createElement('p');
     nativePhrase.className = 'nativePhrase';
 
@@ -297,11 +290,10 @@ export class View {
       }
     }
 
-    // Generate buttons
-    const buttons = document.createElement('div');
-    buttons.className = 'buttons';
-
     // Micrphone button
+    const microphoneButtonContainer = document.createElement('div');
+    microphoneButtonContainer.id = 'microphoneButtonContainer';
+
     const microphoneButton = document.createElement('button');
     microphoneButton.id = 'microphoneButton';
     microphoneButton.className = 'button primary icon';
@@ -309,37 +301,37 @@ export class View {
     const microphoneIcon = document.createElement('img');
     microphoneIcon.className = 'centered';
     microphoneIcon.src = './assets/svg/microphone_white.svg';
-    microphoneIcon.style.width = 14 + 'px';
+    microphoneIcon.style.width = 24 + 'px';
     microphoneButton.append(microphoneIcon);
 
-    // Speak button
-    const speakButton = document.createElement('button');
-    speakButton.id = 'speakButton';
-    speakButton.className = 'button primary icon';
+    // Circle pulse
+    const circle = document.createElement('div');
+    circle.id = 'circle';
+    circle.className = 'centered';
 
-    const speakIcon = document.createElement('img');
-    speakIcon.className = 'centered';
-    speakIcon.src = './assets/svg/speaker_white.svg';
-    speakIcon.style.width = 20 + 'px';
-    speakButton.append(speakIcon);
+    microphoneButtonContainer.append(circle, microphoneButton);
 
-    // Listening message
-    const listeningMessage = document.createElement('p');
-    listeningMessage.id = 'listeningMessage';
-    listeningMessage.innerText = 'Listening...';
-    listeningMessage.style.display = 'inline-block';
-    listeningMessage.style.marginRight = 0.3 + 'rem';
-    listeningMessage.style.visibility = 'hidden';
+//     // Speak button
+//     const speakButton = document.createElement('button');
+//     speakButton.id = 'speakButton';
+//     speakButton.className = 'button primary icon';
+// 
+//     const speakIcon = document.createElement('img');
+//     speakIcon.className = 'centered';
+//     speakIcon.src = './assets/svg/speaker_white.svg';
+//     speakIcon.style.width = 20 + 'px';
+//     speakButton.append(speakIcon);
 
-    buttons.append(listeningMessage, microphoneButton, speakButton);
-
-    bottomWrapper.append(nativePhrase, buttons);
-
-    clozeCard.append(targetPhrase, bottomWrapper);
+    clozeCard.append(targetPhrase, nativePhrase, microphoneButtonContainer);
 
     this.currentCard = clozeCard;
 
     document.body.append(clozeCard);
+  }
+
+  toggleRecordingAnimation() {
+    const circle = document.getElementById('circle');
+    circle.classList.toggle('active');
   }
 
   showCloze(word, capitalise) {

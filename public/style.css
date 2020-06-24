@@ -98,13 +98,13 @@ nav ul {
   min-width: 480px;
   max-width: 720px;
   width: 70vw;
+  padding: 68px 40px 68px 40px;
 }
 
 .cloze .targetPhrase { /* quick fix, needed extra specificity to overide .card p*/
   font-weight: 600;
   font-size: 2.2rem;
-  margin-top: 3rem;
-  margin-bottom: 7rem;
+  margin-bottom: 3rem;
   color: #766f6f;
 }
 
@@ -143,6 +143,33 @@ nav ul {
 
 .targetWord {
   color: #d94f4f;
+}
+
+#microphoneButtonContainer {
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  transform: translate(-70%, -70%);
+}
+
+#microphoneButton {
+  height: 82px;
+  width: 82px;
+}
+
+#circle {
+  border: 2px solid #d94f4f;
+  border-radius: 50%;
+}
+
+#circle.active {
+  animation: recording 3s infinite;
+}
+
+@keyframes recording {
+  0% { height: 82px; width: 82px; }
+  50% { height: 160px; width: 160px; }
+  100% { height: 82px; width: 82px; }
 }
 
 /* INPUT STUFF */
