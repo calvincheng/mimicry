@@ -3,48 +3,48 @@ export class Controller {
     this.model = model;
     this.view = view;
 
-
-    this.user = {
-      displayName: null,
-      email: null,
-      uid: null
-    }
-
-    this.session = {
-      deckId: null,
-      cardId: null,
-      quality: 0,
-//      cardsCorrect: 0,
-//      cardsIncorrect: 0,
-    }
-
-    this.inputTimeout = null;
-    this.input = '';
-
-    this.initSpeechRecognition();
-
-//    this.initOffline();
-
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         // User is signed in.
+        console.log('Signed in');
 
         // Populate user data
-        this.user.displayName = user.displayName;
-        this.user.email = user.email;
-        this.user.emailVerified = user.emailVerified;
-        this.user.uid = user.uid;
+        this.user = {
+          displayName:   user.displayName,
+          email:         user.email,
+          emailVerified: user.emailVerified,
+          uid:           user.uid,
+        };
 
         let userData = await this.model.getUserData(user.uid);
         this.progress = userData.progress;
 
-        console.log('Signed in');
+        // Create session data
+        this.session = {
+          deckId: null,
+          cardId: null,
+          quality: 0,
+          cardsCorrect: 0,
+          cardsIncorrect: 0,
+        }
 
+        // Reset input
+        this.inputTimeout = null; // Used for offline keyboard input
+        this.input = '';
+
+        // Show logout button
         this.view.nav.querySelector('#logoutButton').hidden = false;
         this.view._bindLogoutButton(this.logoutUser);
  
-        // Start cloze cards
-        this.init();
+        const speechRecognitionAvailable = this.initSpeechRecognition();
+
+        if (speechRecognitionAvailable) {
+          // Start cloze cards
+          this.init();
+        } else {
+          const msg = "Sorry, due to limitations in WebSpeech API, Mimicry is currently only supported on Google Chrome.";
+          this.view.showMessageCard(msg);
+        }
         
       } else {
         // User is signed out.
@@ -245,6 +245,9 @@ export class Controller {
   }
 
   initSpeechRecognition() {
+    // Initialises WebSpeech API Speech Recognition
+    // Returns true if available, false if not
+    
     if ('webkitSpeechRecognition' in window) {
       let speechRecognition = webkitSpeechRecognition;
       this.recognition = new speechRecognition();
@@ -277,10 +280,13 @@ export class Controller {
         console.log('FINAL INPUT:', this.input);
         this.view.toggleRecordingAnimation();
         setTimeout(this.confirmInput, 400);
-//        this.confirmInput();
       }
+
+      return true;
+
     } else {
       console.log('Mimicry not supported on this browser. Please use Google Chrome instead.');
+      return false;
     }
   }
 
