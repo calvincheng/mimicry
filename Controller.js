@@ -274,8 +274,7 @@ export class Controller {
 
       this.recognition.onend = (event) => {
         console.log('FINAL INPUT:', this.input);
-        this.view.currentCard.querySelector('#listeningMessage')
-          .style.visibility = 'hidden';
+        this.view.toggleRecordingAnimation();
         setTimeout(this.confirmInput, 400);
 //        this.confirmInput();
       }
@@ -285,8 +284,7 @@ export class Controller {
   }
 
   startSpeechRecognition = () => {
-    this.view.currentCard.querySelector('#listeningMessage')
-      .style.visibility = 'visible';
+    this.view.toggleRecordingAnimation();
     this.recognition.start();
   }
 
