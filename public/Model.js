@@ -1,52 +1,5 @@
 export class Model {
   constructor() {
-
-    // Sample data
-    this.db = {
-      users: {
-        hTfly2BvucRuD1AdGV6HNH73bnC3: {
-          name: "Calvin Cheng",
-          email: "email@gmail.com",
-          progress: 0, // 4th word
-          deck: 1234,
-        },
-      },
-
-      cards: {
-        0: {
-          fr: "{Bonjour}, tout le monde !",
-          en: "{Hello}, everybody!",
-        },
-        1: {
-          fr: "Enchanté, {je} suis Sam.",
-          en: "Nice to meet you, {I}'m Sam.",
-        },
-        2: {
-          fr: "{Merci}, au revoir !",
-          en: "{Thank you}, goodbye!",
-        },
-      },
-
-      decks: {
-        hTfly2BvucRuD1AdGV6HNH73bnC3: {
-          owner: "hTfly2BvucRuD1AdGV6HNH73bnC3",
-          cards: {
-//          cardId: {
-//               repetitions: 0,
-//               interval: 1, // in days
-//               easiness: 0,
-//          }
-//          0: {
-//            repetitions: 0,
-//            interval: 1,
-//            easiness: 0,
-//            lastRevised: null,
-//            due: "2020-06-15T10:48:11.180Z",
-//          },
-          },
-        }
-      },
-    }
   }
 
   async getUserData(uid) {
@@ -87,12 +40,10 @@ export class Model {
       due: new Date().toJSON(), // now
     };
     firebase.database().ref('/decks/' + deckId + '/cards/' + cardId).set(cardData);
-    // this.db.decks[deckId].cards[cardId] = cardData;
   }
 
   async updateCard(cardId, deckId, quality) {
     // SuperMemo 2 (SM2) Algorithm
-    // const card = this.db.decks[deckId].cards[cardId];
     const cardData = await firebase.database().ref('/decks/'+deckId+'/cards/'+cardId).once('value');
     const card = cardData.val();
 
@@ -135,13 +86,10 @@ export class Model {
     }
 
     // Update database 
-    // this.db.decks[deckId].cards[cardId] = newCard;
     firebase.database().ref('/decks/'+deckId+'/cards/'+cardId).set(newCard);
   }
 
-//  async getDueCardIdsOffline(deckId) {
   async getDueCardIds(deckId) {
-//    const deck = this.db.decks[deckId].cards;
     const deckData = await firebase.database().ref('/decks/'+deckId+'/cards').once('value');
     const deck = deckData.val();
     const now = new Date();
@@ -157,11 +105,6 @@ export class Model {
   async getCard(cardId) {
     const data = await firebase.database().ref('/cards/' + cardId).once('value');
     return data.val();
-  }
-
-  async getCardOffline(cardId) {
-    const data = await this.db.cards[cardId];
-    return data;
   }
 
 }

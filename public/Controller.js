@@ -29,7 +29,6 @@ export class Controller {
         }
 
         // Reset input
-        this.inputTimeout = null; // Used for offline keyboard input
         this.input = '';
 
         // Show logout button
@@ -153,7 +152,6 @@ export class Controller {
     this.view._bindSignupButton(this.showSignupCard);
     this.view._bindForgotPasswordLink(this.showForgotPasswordCard);
 
-//    this.deafen();
     this.removeSpacebarShortcut();
   }
 
@@ -188,7 +186,6 @@ export class Controller {
 
     this.input = '';
     this.addSpacebarShortcut();
-    // this.listen();
   }
 
   showMessageCard = (msg) => {
@@ -205,13 +202,6 @@ export class Controller {
         this.dueCardIds = await this.model.getDueCardIds(this.session.deckId);
         this.nextCard();
       });
-  }
-
-  initOffline = async () => {
-    this.session.deckId = 1234;
-    this.dueCardIds = await this.model.getDueCardIdsOffline(this.session.deckId);
-    console.log(this.dueCardIds);
-    this.nextCard();
   }
 
   nextCard = async () => {
@@ -311,48 +301,6 @@ export class Controller {
     this.startSpeechRecognition();
   }
 
-  listen() {
-    // Listen for keyboard input -- FOR TESTING
-    document.addEventListener('keydown', this.readInput);
-  }
-
-  deafen() {
-    // Stop listening for keyboard input -- FOR TESTING
-    document.removeEventListener('keydown', this.readInput);
-  }
-  
-  readInput = (event) => {
-    // Used for keyboard input -- FOR TESTING
-
-    // Ensure input is valid (alphanumeric or backspace)
-    const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
-    if (!event.key.match(alphanum) && !event.key == 'Backspace') return;
-
-    if (event.key.match(alphanum)) {
-
-      this.input += event.key;
-
-    } else if (event.key === 'Backspace') {
-
-      event.preventDefault(); // Stop going to previous page
-
-      // Remove last character
-      this.input = this.input.slice(0, -1);
-    }
-
-    // Check if input matches card
-    const result = this.checkInput();
-
-    // Update view
-    this.view._highlightWords(result.correctIdxs);
-
-    // Reset confirm timeout
-    if (this.inputTimeout) clearTimeout(this.inputTimeout);
-    this.inputTimeout = setTimeout(this.confirmInput, 1000);
-
-    console.log(this.input);
-  }
-
   insertClozeWord = () => {
     const targetWords = this.currentCard.fr.split(' ');
     const inputWords = this.input.trim().split(' ');
@@ -444,7 +392,6 @@ export class Controller {
         this.view._removeHighlights();
         this.input = '';
         this.addSpacebarShortcut();
-        // this.listen();
       }, 1500);
     }
   }
