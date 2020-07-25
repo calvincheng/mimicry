@@ -55,14 +55,14 @@ export class View {
     // Add buttons
     const loginButton = document.createElement('button');
     loginButton.id = 'loginButton';
-    loginButton.className = 'button primary';
+    loginButton.className = 'button green';
     loginButton.innerText = 'Log in';
     loginButton.style.width = '100%';
     loginButton.style.marginTop = 1 + 'rem';
 
     const signupButton = document.createElement('button');
     signupButton.id = 'signupButton';
-    signupButton.className = 'button secondary';
+    signupButton.className = 'button yellow';
     signupButton.innerText = 'Sign up';
     signupButton.style.width = '100%';
     signupButton.style.marginTop = 0.8 + 'rem';
@@ -132,14 +132,14 @@ export class View {
     // Add buttons
     const sendButton = document.createElement('button');
     sendButton.id = 'sendButton';
-    sendButton.className = 'button primary';
+    sendButton.className = 'button green';
     sendButton.innerText = 'Send';
     sendButton.style.width = '100%';
     sendButton.style.marginTop = 1 + 'rem';
 
     const backButton = document.createElement('button');
     backButton.id = 'backToLoginButton';
-    backButton.className = 'button secondary';
+    backButton.className = 'button yellow';
     backButton.innerText = 'Back';
     backButton.style.width = '100%';
     backButton.style.marginTop = 0.8 + 'rem';
@@ -171,7 +171,7 @@ export class View {
 
     const backButton = document.createElement('button');
     backButton.id = 'backToLoginButton';
-    backButton.className = 'button primary';
+    backButton.className = 'button green';
     backButton.innerText = 'Back';
     backButton.style.width = '100%';
     backButton.style.marginTop = 1.5 + 'rem';
@@ -207,14 +207,14 @@ export class View {
 
     const createAccountButton = document.createElement('button');
     createAccountButton.id = 'createAccountButton';
-    createAccountButton.className = 'button primary';
+    createAccountButton.className = 'button green';
     createAccountButton.innerText = 'Create account';
     createAccountButton.style.width = '100%';
     createAccountButton.style.marginTop = 1 + 'rem';
 
     const backButton = document.createElement('button');
     backButton.id = 'backToLoginButton';
-    backButton.className = 'button secondary';
+    backButton.className = 'button yellow';
     backButton.innerText = 'Back';
     backButton.style.width = '100%';
     backButton.style.marginTop = 0.8 + 'rem';
@@ -241,8 +241,11 @@ export class View {
     // }
 
     const clozeCard = document.createElement('div');
-    clozeCard.className = 'card cloze centered dp1';
+    clozeCard.className = 'cloze centered';
     clozeCard.id = 'clozeCard';
+
+    const primary = document.createElement('div');
+    primary.id = 'primaryContainer';
     
     // Generate target phrase
     const targetPhrase = document.createElement('p');
@@ -265,14 +268,6 @@ export class View {
       // Add space between words
       targetPhrase.insertAdjacentHTML('beforeend', ' ');
     }
-
-    // Add nativePhrase and buttons to bottom wrapper
-    const bottomWrapper = document.createElement('div');
-
-    // Apply basic styles to wrapper
-    bottomWrapper.style.display = 'flex';
-    bottomWrapper.style.justifyContent = 'space-between';
-    bottomWrapper.style.alignItems = 'flex-end';
 
     const nativePhrase = document.createElement('p');
     nativePhrase.className = 'nativePhrase';
@@ -297,45 +292,51 @@ export class View {
       }
     }
 
+    primary.append(targetPhrase, nativePhrase);
+
+    // Add nativePhrase and buttons to bottom wrapper
+    const secondary = document.createElement('div');
+    secondary.id = 'secondaryContainer';
+
     // Generate buttons
     const buttons = document.createElement('div');
     buttons.className = 'buttons';
 
-    // Micrphone button
-    const microphoneButton = document.createElement('button');
-    microphoneButton.id = 'microphoneButton';
-    microphoneButton.className = 'button primary icon';
+    // Record button
+    const recordButton = document.createElement('button');
+    recordButton.id = 'recordButton';
+    recordButton.className = 'button yellow';
+    recordButton.innerText = 'Record';
 
-    const microphoneIcon = document.createElement('img');
-    microphoneIcon.className = 'centered';
-    microphoneIcon.src = './assets/svg/microphone_white.svg';
-    microphoneIcon.style.width = 14 + 'px';
-    microphoneButton.append(microphoneIcon);
+    // Input display
+    const inputDisplay = document.createElement('div');
+    inputDisplay.id = 'inputDisplay';
 
     // Speak button
     const speakButton = document.createElement('button');
     speakButton.id = 'speakButton';
-    speakButton.className = 'button primary icon';
+    speakButton.className = 'button blue icon';
 
     const speakIcon = document.createElement('img');
     speakIcon.className = 'centered';
-    speakIcon.src = './assets/svg/speaker_white.svg';
-    speakIcon.style.width = 20 + 'px';
+    speakIcon.src = './assets/svg/speaker.svg';
+    speakIcon.style.width = 28 + 'px';
     speakButton.append(speakIcon);
 
-    // Listening message
-    const listeningMessage = document.createElement('p');
-    listeningMessage.id = 'listeningMessage';
-    listeningMessage.innerText = 'Listening...';
-    listeningMessage.style.display = 'inline-block';
-    listeningMessage.style.marginRight = 0.3 + 'rem';
-    listeningMessage.style.visibility = 'hidden';
+    // Next button
+    const nextButton = document.createElement('button');
+    nextButton.id = 'nextButton';
+    nextButton.className = 'button orange icon';
 
-    buttons.append(listeningMessage, microphoneButton, speakButton);
+    const nextIcon = document.createElement('img');
+    nextIcon.className = 'centered';
+    nextIcon.src = './assets/svg/cross.svg';
+    nextIcon.style.width = 20 + 'px';
+    nextButton.append(nextIcon);
 
-    bottomWrapper.append(nativePhrase, buttons);
+    secondary.append(recordButton, inputDisplay, speakButton, nextButton);
 
-    clozeCard.append(targetPhrase, bottomWrapper);
+    clozeCard.append(primary, secondary);
 
     this.currentCard = clozeCard;
 
@@ -511,8 +512,8 @@ export class View {
 
   _bindMicrophoneButton(handler) {
     this.currentCard.addEventListener('click', (event) => {
-      if (event.target.id !== 'microphoneButton' &&
-          !event.target.matches('#microphoneButton img')) return;
+      if (event.target.id !== 'recordButton' &&
+          !event.target.matches('#recordButton img')) return;
 
       event.target.closest('.button').blur();
       
