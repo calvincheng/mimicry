@@ -11,7 +11,7 @@
 }
 
 html {
-  color: #e2e1e1;
+  color: #000000;
   font-family: 'DIN', 'Nunito Sans', sans-serif;
 }
 
@@ -60,20 +60,11 @@ nav ul {
   transform: translate(-50%, -50%);
 }
 
-.dp0 {
-  background-color: #221717;
-  box-shadow: none;
-}
-
-.dp1 {
-  background-color: #2d2323;
-  box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20);
-}
-
 .card {
   padding: 3rem;
   width: 380px;
-  border-radius: 16px;
+  background-color: #fbf7f6;
+  border: 1.5pt solid black;
 }
 
 .card p {
@@ -81,18 +72,18 @@ nav ul {
 }
 
 .card h2 {
+  font-weight: normal;
   margin-bottom: 3rem;
 }
 
 .card a {
   font-size: 0.75rem;
-  color: #a7a2a2;
   transition: color 0.3s;
 }
 
 .card a:hover, .card a:focus {
   outline: none;
-  color: #e2e1e1;
+  color: #666666;
 }
 
 .card .error {
@@ -168,11 +159,10 @@ nav ul {
 
   background: none;
   border: none;
-  border-bottom: 2px solid #aaa;
+  border-bottom: 2px solid #888;
   transition: border-bottom 0.3s ease-out;
 
-  color: #dddddd;
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'DIN', sans-serif;
   font-size: 1rem;
 }
 
@@ -190,9 +180,9 @@ nav ul {
   top: 0.1rem;
   left: 0px;
 
-  font-family: 'Nunito Sans', sans-serif;
+  font-family: 'DIN', sans-serif;
   font-size: 1rem;
-  color: #aaa;
+  color: #888;
 
   pointer-events: none;
   transition: all 0.2s;
@@ -216,13 +206,14 @@ nav ul {
 
 .button {
   padding: 0.8rem;
-  border-radius: 0.4rem;
 
   font-family: 'Nunito Sans', sans-serif;
   letter-spacing: 0.1rem;
   font-size: 1rem;
   font-weight: 700;
   text-transform: uppercase;
+
+  border: 1px solid black;
 
   cursor: pointer;
   transition: background-color 0.2s;
@@ -237,23 +228,20 @@ nav ul {
 }
 
 .primary {
-  background-color: #d94f4f;
-  border: none;
+  background-color: #77efa7;
   color: #221717;
 }
 
 .primary:hover, .primary:focus {
-  background-color: #d85959;
+  background-color: #6bd696;
 }
 
 .secondary {
-  background: none;
-  border: 1px solid #d94f4f;
-  color: #d94f4f;
+  background-color: #fff792;
 }
 
 .secondary:hover, .secondary:focus {
-  background-color: #372626;
+  background-color: #e7e183;
 }
 
 .icon {
