@@ -7,3 +7,10 @@ node_modules/*
 *.swp
 config.js
 .env
+scrape
+sentences
+sentence_filter.py
+node_modules
+mimicryNotes.txt
+Mimicry.ai
+
