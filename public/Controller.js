@@ -215,6 +215,7 @@ export class Controller {
 
     let cardId;
     let isNewCard = false;
+
     // Revise due cards if available, otherwise study new cards
     if (this.dueCardIds.length > 0) {
       cardId = this.dueCardIds.pop(); 
