@@ -253,6 +253,8 @@ export class Controller {
 
       this.recognition.onstart = () => {
         console.log('Speech recognition: ON');
+        this.view.currentCard.querySelector('#inputDisplay')
+          .innerText = 'Listening...';
         this.input = '';
       };
 
@@ -274,6 +276,8 @@ export class Controller {
 
       this.recognition.onend = (event) => {
         console.log('FINAL INPUT:', this.input);
+        this.view.currentCard.querySelector('#inputDisplay')
+          .innerText = '';
         setTimeout(this.confirmInput, 400);
 //        this.confirmInput();
       }
