@@ -23,8 +23,6 @@ export class Controller {
 
     this.initSpeechRecognition();
 
-//    this.initOffline();
-
     firebase.auth().onAuthStateChanged(async (user) => {
       if (user) {
         // User is signed in.
@@ -57,7 +55,6 @@ export class Controller {
       }
     });
   }
-
 
   signupUser = (email, password) => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
@@ -153,7 +150,7 @@ export class Controller {
     this.view._bindSignupButton(this.showSignupCard);
     this.view._bindForgotPasswordLink(this.showForgotPasswordCard);
 
-    this.deafen();
+    this.removeSpacebarShortcut();
   }
 
   showForgotPasswordCard = () => {
@@ -186,7 +183,7 @@ export class Controller {
     this.view._bindSpeakButton(this.speakPhrase);
 
     this.input = '';
-    // this.listen();
+    this.addSpacebarShortcut();
   }
 
   showFinishedCard = () => {
@@ -279,7 +276,6 @@ export class Controller {
         this.view.currentCard.querySelector('#inputDisplay')
           .innerText = '';
         setTimeout(this.confirmInput, 400);
-//        this.confirmInput();
       }
     } else {
       console.log('Mimicry not supported on this browser. Please use Google Chrome instead.');
@@ -290,46 +286,17 @@ export class Controller {
     this.recognition.start();
   }
 
-  listen() {
-    // Listen for keyboard input -- FOR TESTING
-    document.addEventListener('keydown', this.readInput);
+  addSpacebarShortcut() {
+    document.addEventListener('keydown', this.readSpacebar);
   }
 
-  deafen() {
-    // Stop listening for keyboard input -- FOR TESTING
-    document.removeEventListener('keydown', this.readInput);
+  removeSpacebarShortcut() {
+    document.removeEventListener('keydown', this.readSpacebar);
   }
-  
-  readInput = (event) => {
-    // Used for keyboard input -- FOR TESTING
 
-    // Ensure input is valid (alphanumeric or backspace)
-    const alphanum = /^[a-zA-Z0-9!\.\,\' ]$/;
-    if (!event.key.match(alphanum) && !event.key == 'Backspace') return;
-
-    if (event.key.match(alphanum)) {
-
-      this.input += event.key;
-
-    } else if (event.key === 'Backspace') {
-
-      event.preventDefault(); // Stop going to previous page
-
-      // Remove last character
-      this.input = this.input.slice(0, -1);
-    }
-
-    // Check if input matches card
-    const result = this.checkInput();
-
-    // Update view
-    this.view._highlightWords(result.correctIdxs);
-
-    // Reset confirm timeout
-    if (this.inputTimeout) clearTimeout(this.inputTimeout);
-    this.inputTimeout = setTimeout(this.confirmInput, 1000);
-
-    console.log(this.input);
+  readSpacebar = (event) => {
+    if (event.code !== 'Space') return;
+    this.startSpeechRecognition();
   }
 
   insertClozeWord = () => {
@@ -397,7 +364,7 @@ export class Controller {
 
   confirmInput = () => {
     const result = this.checkInput();
-//    this.deafen();
+    this.removeSpacebarShortcut();
 
     if (result.correct) { 
       this.view._confirm('correct');
@@ -421,7 +388,7 @@ export class Controller {
         this.view.hideCloze();
         this.view._removeHighlights();
         this.input = '';
-        // this.listen();
+        this.addSpacebarShortcut();
       }, 1500);
     }
   }
