@@ -343,13 +343,14 @@ export class View {
     document.body.append(clozeCard);
   }
 
-  showCloze(word, capitalise) {
+  fillCloze(input, capitalise) {
+    // Fills empty cloze with input word
     const clozeWord = document.querySelector('.clozeWord');
     if (capitalise) {
-      word = word.charAt(0).toUpperCase() + word.slice(1);
+      input = input.charAt(0).toUpperCase() + word.slice(1);
     }
     clozeWord.classList.add('spoken');
-    clozeWord.innerText = word;
+    clozeWord.innerText = input;
   }
 
   hideCloze() {

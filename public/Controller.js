@@ -305,14 +305,7 @@ export class Controller {
     const inputWords = this.input.trim().split(' ');
 
     // Find index of cloze word in targetPhrase
-    let index;
-    for (let i = 0; i < targetWords.length; i++) {
-      const word = targetWords[i];
-      if (word.includes('{')) {
-        index = i;
-        break;
-      }
-    }
+    index = targetWords.findIndex(word => word.includes('{'))
 
     // Return if input doesn't have enough words to match cloze
     if (index >= inputWords.length) return;
