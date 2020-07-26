@@ -8,7 +8,7 @@ export class View {
     const nav = document.createElement('nav');
 
     // Create logo and add to nav
-    const logo = document.createElement('span');
+    const logo = document.createElement('a');
     logo.className = 'nav-logo';
     logo.innerText = 'MIMICRY';
 
