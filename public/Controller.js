@@ -304,16 +304,14 @@ export class Controller {
     const targetWords = this.currentCard.fr.split(' ');
     const inputWords = this.input.trim().split(' ');
 
-    // Find index of cloze word in targetPhrase
-    index = targetWords.findIndex(word => word.includes('{'))
-
-    // Return if input doesn't have enough words to match cloze
+    // Return if input doesn't have enough words to fill cloze
+    const index = targetWords.findIndex(word => word.includes('{'));
     if (index >= inputWords.length) return;
 
     // Mark the index-th word in input as cloze word
     const clozeWord = inputWords[index];
     const capitalise = index === 0;
-    this.view.showCloze(clozeWord, capitalise);
+    this.view.fillCloze(clozeWord, capitalise);
   }
 
   checkInput = () => {
@@ -321,8 +319,11 @@ export class Controller {
 
     const inputWords = this.input.trim().split(' ');
     let targetWords = this.currentCard.fr.replace(removeBrackets, '').split(' ');
-    
-    let skip = 0; // For offsetting word comparison (i.e. skip = 1 --> input[2] vs target[3])
+
+    // Offsets word comparison (i.e. skip = 1 --> input[2] vs target[3])
+    // Used because spaces around punctuation (e.g. Bonjour !)
+    let skip = 0; 
+
     let correct = true;
     let correctIdxs = [];
     for (let i = 0; i < targetWords.length; i++) {

@@ -259,9 +259,15 @@ export class View {
         span.className = 'clozeWord',
         word = word.replace(/[\{\}]/g, '');
         this.clozeWord = word;//.replace(/[\,\.]/g, '');
-      } 
+        span.innerText = word;
+        span.style.position = 'relative';
 
-      span.innerText = word;
+        let underline = document.createElement('span');
+        underline.id = 'clozeUnderline';
+        span.append(underline);
+      } else {
+        span.innerText = word;
+      }
 
       targetPhrase.append(span);
 
@@ -346,19 +352,28 @@ export class View {
   fillCloze(input, capitalise) {
     // Fills empty cloze with input word
     const clozeWord = document.querySelector('.clozeWord');
+    const clozeUnderline = document.querySelector('#clozeUnderline');
     if (capitalise) {
-      input = input.charAt(0).toUpperCase() + word.slice(1);
+      input = input.charAt(0).toUpperCase() + input.slice(1);
     }
     clozeWord.classList.add('spoken');
-    clozeWord.innerText = input;
+    let text = clozeWord.childNodes[0];
+    text.nodeValue = input;
+    clozeUnderline.hidden = true;
   }
 
   hideCloze() {
     const clozeWord = document.querySelector('.clozeWord');
+    const clozeUnderline = document.querySelector('#clozeUnderline');
+
+    clozeUnderline.hidden = false;
     clozeWord.classList.remove('spoken');
 
     // Wait for CSS transition to finish before replacing inner text
-    setTimeout( () => {clozeWord.innerText = this.clozeWord;}, 200);
+    setTimeout(() => {
+      let text = clozeWord.childNodes[0]
+      text.nodeValue = this.clozeWord;
+    }, 200);
   }
 
   _isBracketed(string) {
@@ -380,12 +395,12 @@ export class View {
       const span = targetSpans[i];
       span.classList.add('correct');
     }
-
   }
 
   _removeHighlights() {
     const targetPhrase = document.querySelector('.targetPhrase');
     const targetSpans = targetPhrase.children;
+    const clozeUnderline = document.querySelector('#clozeUnderline');
 
     targetPhrase.classList.remove('complete');
     targetPhrase.classList.remove('incomplete');
@@ -396,6 +411,8 @@ export class View {
   }
 
   _confirm(state) {
+    const clozeUnderline = document.querySelector('#clozeUnderline');
+    clozeUnderline.hidden = true;
     switch (state) {
       case 'correct':
         document.querySelector('.targetPhrase').classList.add('complete');
@@ -414,7 +431,7 @@ export class View {
     finishedCard.style.textAlign = 'center';
 
     const message = document.createElement('p');
-    message.innerText = 'All done for now!\nCheck back later for due cards.';
+    message.innerText = '🎉 All done for now! 🎉\nCheck back later for due cards.';
     message.className = 'centered';
     finishedCard.append(message)
 
