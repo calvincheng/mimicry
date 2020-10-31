@@ -1,4 +1,4 @@
-export class Controller {
+export default class Controller {
   constructor(model, view) {
     this.model = model;
     this.view = view;
@@ -179,8 +179,9 @@ export class Controller {
     this.currentCard = card;
 
     this.view.showClozeCard(card);
-    this.view._bindMicrophoneButton(this.startSpeechRecognition);
+    this.view._bindRecordButton(this.startSpeechRecognition);
     this.view._bindSpeakButton(this.speakPhrase);
+    this.view._bindNextButton(this.nextCard);
 
     this.input = '';
     this.addSpacebarShortcut();
@@ -200,6 +201,7 @@ export class Controller {
         this.dueCardIds = await this.model.getDueCardIds(this.session.deckId);
         this.nextCard();
       });
+    this.cheat(); // TODO: Remove
   }
 
   initOffline = async () => {
@@ -235,6 +237,10 @@ export class Controller {
     }
 
     card ? this.showClozeCard(card) : this.showFinishedCard();
+  }
+
+  showAnswer = () => {
+
   }
 
   updateCard = (cardId, deckId, quality) => {
@@ -274,8 +280,7 @@ export class Controller {
 
       this.recognition.onend = (event) => {
         console.log('FINAL INPUT:', this.input);
-        this.view.currentCard.querySelector('#inputDisplay')
-          .innerText = '';
+        this.view.currentCard.querySelector('#inputDisplay').innerText = '';
         setTimeout(this.confirmInput, 400);
       }
     } else {
@@ -357,6 +362,13 @@ export class Controller {
     return string.normalize('NFD').replace(/[\u0300-\u036f]/g, "");
   }
 
+  cheat = () => {
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'j') this.view._confirm('correct');
+      if (event.key === 'k') this.view._confirm('incorrect');
+    });
+  }
+
   confirmInput = () => {
     const result = this.checkInput();
     this.removeSpacebarShortcut();
@@ -364,16 +376,16 @@ export class Controller {
     if (result.correct) { 
       this.view._confirm('correct');
 
-      setTimeout(() => {
-        // Set SM2 stats and show next card
-        this.model.updateCard(
-          this.session.cardId, 
-          this.session.deckId, 
-          this.session.quality
-        );
+      // setTimeout(() => {
+      //   // Set SM2 stats and show next card
+      //   this.model.updateCard(
+      //     this.session.cardId, 
+      //     this.session.deckId, 
+      //     this.session.quality
+      //   );
 
-        this.nextCard()
-      }, 1000);
+      //   this.nextCard()
+      // }, 1000);
     } else {
       this.view._confirm('incorrect')
 

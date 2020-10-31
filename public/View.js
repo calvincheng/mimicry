@@ -1,4 +1,4 @@
-export class View {
+export default class View {
   constructor() {
     this.showNavbar();
   }
@@ -19,7 +19,7 @@ export class View {
 
     const signoutLink = document.createElement('a');
     signoutLink.id = 'logoutButton';
-    signoutLink.innerText = 'Sign out';
+    signoutLink.innerText = 'SIGN OUT';
 
     signoutLink.hidden = true;
 
@@ -411,14 +411,31 @@ export class View {
   }
 
   _confirm(state) {
+    const targetPhrase = document.querySelector('.targetPhrase');
+    const nextButton = document.querySelector('#nextButton');
     const clozeUnderline = document.querySelector('#clozeUnderline');
     clozeUnderline.hidden = true;
+
     switch (state) {
       case 'correct':
-        document.querySelector('.targetPhrase').classList.add('complete');
+        targetPhrase.classList.add('complete');
+        nextButton.classList.remove('orange');
+        nextButton.classList.add('green');
+
+        const nextIcon = nextButton.children[0];
+        nextIcon.src = './assets/svg/arrow_right.svg';
+        nextIcon.style.width = 26 + 'px';
+
+        setTimeout(() => {
+          this._removeHighlights();
+          const targetSpans = targetPhrase.children;
+          for (let span of targetSpans) {
+            span.classList.add('correct');
+          }
+        }, 1000);
         break;
       case 'incorrect':
-        document.querySelector('.targetPhrase').classList.add('incomplete');
+        targetPhrase.classList.add('incomplete');
         break;
       default:
         return;
@@ -528,10 +545,21 @@ export class View {
     });
   }
 
-  _bindMicrophoneButton(handler) {
+  _bindRecordButton(handler) {
     this.currentCard.addEventListener('click', (event) => {
       if (event.target.id !== 'recordButton' &&
           !event.target.matches('#recordButton img')) return;
+
+      event.target.closest('.button').blur();
+      
+      handler();
+    });
+  }
+
+  _bindNextButton(handler) {
+    this.currentCard.addEventListener('click', (event) => {
+      if (event.target.id !== 'nextButton' &&
+          !event.target.matches('#nextButton img')) return;
 
       event.target.closest('.button').blur();
       

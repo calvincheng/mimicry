@@ -41,6 +41,8 @@ nav {
   align-items: center;
 
   color: white;
+  font-size: 14px;
+  letter-spacing: 0.05rem;
   background-color: black;
 
   padding-left: 40px;
